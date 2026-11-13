@@ -43,6 +43,19 @@
     show(mainView);
   }
 
+  /* כניסה סודית לדף המנהל: 5 לחיצות על ה-40 תוך 3 שניות */
+  (function secretAdminTap() {
+    const badge = document.querySelector('.badge');
+    if (!badge) return;
+    let taps = [];
+    badge.addEventListener('click', () => {
+      const now = Date.now();
+      taps = taps.filter((t) => now - t < 3000);
+      taps.push(now);
+      if (taps.length >= 5) location.href = 'admin.html';
+    });
+  })();
+
   /* ---------------- ספירה לאחור / קיר ---------------- */
 
   let timer = null;

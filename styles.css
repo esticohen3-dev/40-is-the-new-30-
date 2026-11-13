@@ -60,6 +60,9 @@ body {
   font-weight: 900;
   font-size: 44px;
   box-shadow: 0 0 0 8px rgba(255, 255, 255, .12);
+  touch-action: manipulation; /* לחיצות מהירות בלי זום בטלפון */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 .confetti {
   position: absolute; inset: 0; pointer-events: none;
