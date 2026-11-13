@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2b1d4e">
+  <title>40 לטלאור!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="confetti" aria-hidden="true"></div>
+    <div class="badge" aria-hidden="true">40</div>
+    <h1>40 לטלאור!</h1>
+    <p class="hero-sub" id="heroSub">אוספים ברכות לקראת היום הגדול</p>
+  </header>
+
+  <main class="container">
+
+    <!-- דף הבית: ספירה לאחור -->
+    <section id="view-home" class="view">
+      <div class="countdown" id="countdown" aria-live="off">
+        <div class="unit"><span class="num" id="cdDays">–</span><span class="lbl">ימים</span></div>
+        <div class="unit"><span class="num" id="cdHours">–</span><span class="lbl">שעות</span></div>
+        <div class="unit"><span class="num" id="cdMinutes">–</span><span class="lbl">דקות</span></div>
+        <div class="unit"><span class="num" id="cdSeconds">–</span><span class="lbl">שניות</span></div>
+      </div>
+      <p class="lock-note" id="lockNote"></p>
+      <button type="button" class="btn primary big" data-action="start">השאירו ברכה</button>
+    </section>
+
+    <!-- קיר הברכות (מיום ההולדת) -->
+    <section id="view-wall" class="view" hidden>
+      <div class="wall-head">
+        <p class="wall-title">המון אהבה ממי שאוהבים אותך 💛</p>
+        <button type="button" class="btn ghost" data-action="start">גם אני רוצה לברך</button>
+      </div>
+      <p class="status" id="wallStatus" role="status"></p>
+      <div class="wall" id="wall"></div>
+    </section>
+
+    <!-- טופס -->
+    <section id="view-form" class="view card-panel" hidden>
+      <h2>ברכה לטלאור</h2>
+      <form id="greetForm" novalidate>
+        <label class="field">
+          <span class="field-label">השם שלך <span class="req" aria-hidden="true">*</span></span>
+          <input type="text" id="fName" maxlength="40" autocomplete="name" required>
+        </label>
+
+        <label class="field">
+          <span class="field-label">הברכה</span>
+          <textarea id="fMessage" rows="5" maxlength="500" placeholder="כמה מילים מהלב…"></textarea>
+          <span class="counter" id="msgCounter">0/500</span>
+        </label>
+
+        <!-- honeypot: שדה נסתר שרק בוטים ממלאים -->
+        <div class="hp" aria-hidden="true">
+          <label>אתר אינטרנט <input type="text" id="fWebsite" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <div class="notice" role="note">
+          אפשר לשלוח תמונה (עד 10MB) או סרטון של עד 30 שניות (עד 30MB). אפשר לצלם ישירות מהטלפון.
+        </div>
+
+        <label class="file-btn">
+          <input type="file" id="fFile" accept="image/*,video/*">
+          <span>📷 בחירת תמונה או סרטון</span>
+        </label>
+        <p class="file-status" id="fileStatus" role="status"></p>
+        <div class="preview" id="preview"></div>
+        <button type="button" class="btn link" id="btnRemoveFile" hidden>הסרת הקובץ</button>
+
+        <p class="form-error" id="formError" role="alert"></p>
+
+        <div class="actions">
+          <button type="submit" class="btn primary" id="btnContinue">המשך</button>
+          <button type="button" class="btn ghost" data-action="home">ביטול</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- אישור לפני שליחה -->
+    <section id="view-confirm" class="view card-panel" hidden>
+      <h2>לשלוח את הברכה?</h2>
+      <div class="confirm-box">
+        <p class="confirm-name" id="cName"></p>
+        <p class="confirm-message" id="cMessage"></p>
+        <div class="preview" id="cPreview"></div>
+      </div>
+      <p class="form-error" id="sendError" role="alert"></p>
+      <div class="actions">
+        <button type="button" class="btn primary" id="btnSend">כן, לשלוח</button>
+        <button type="button" class="btn ghost" id="btnBack">חזרה לעריכה</button>
+      </div>
+    </section>
+
+    <!-- שליחה -->
+    <section id="view-sending" class="view card-panel center" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <h2>שולחים…</h2>
+      <p id="sendingNote">רק רגע.</p>
+    </section>
+
+    <!-- תודה -->
+    <section id="view-done" class="view card-panel center" hidden>
+      <div class="big-emoji" aria-hidden="true">🎉</div>
+      <h2>תודה! הברכה נשלחה.</h2>
+      <p>טלאור יראה אותה ביום ההולדת.</p>
+      <button type="button" class="btn ghost" data-action="home">חזרה לדף הראשי</button>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button type="button" class="lightbox-close" aria-label="סגירה">✕</button>
+    <img id="lightboxImg" alt="">
+  </div>
+
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

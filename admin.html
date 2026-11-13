@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2b1d4e">
+  <title>ניהול ברכות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin">
+  <header class="hero small">
+    <h1>ניהול ברכות</h1>
+    <p class="hero-sub">40 לטלאור</p>
+  </header>
+
+  <main class="container">
+    <section id="login" class="card-panel narrow">
+      <form id="loginForm">
+        <label class="field">
+          <span class="field-label">סיסמה</span>
+          <input type="password" id="pw" autocomplete="current-password" required>
+        </label>
+        <p class="form-error" id="loginError" role="alert"></p>
+        <div class="actions"><button type="submit" class="btn primary" id="btnLogin">כניסה</button></div>
+      </form>
+    </section>
+
+    <section id="dash" hidden>
+      <div class="toolbar">
+        <button type="button" class="btn ghost" id="btnRefresh">רענון</button>
+        <button type="button" class="btn ghost" id="btnLogout">יציאה</button>
+      </div>
+      <p class="status" id="dashStatus" role="status"></p>
+
+      <div class="stats" id="stats"></div>
+
+      <details class="card-panel" open>
+        <summary id="pendingTitle">מי עוד לא שלח</summary>
+        <ul class="plain-list" id="pendingList"></ul>
+      </details>
+
+      <details class="card-panel">
+        <summary id="unmatchedTitle">שמות שלא נמצאו ברשימת המוזמנים</summary>
+        <p class="hint">כדאי לבדוק אם זה כתיב אחר של מישהו מהרשימה, ולעדכן את הסטטוס בגיליון ידנית.</p>
+        <ul class="plain-list" id="unmatchedList"></ul>
+      </details>
+
+      <h2 class="section-title">כל הברכות</h2>
+      <div class="admin-list" id="list"></div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
