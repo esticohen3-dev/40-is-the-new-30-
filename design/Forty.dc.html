@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>40 דברים שאוהבים בטלאור</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&amp;family=Heebo:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1E3328}a:hover{color:#0F1F17}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 980px; box-sizing: border-box; background: #F5F7F2; font-family: Heebo, sans-serif; color: #1E3328; display: flex; flex-direction: column; gap: 16px; padding: 16px">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px">
+    <a href="Wall.dc.html" aria-label="חזרה" style="width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; border: 1px solid #E3E9E1; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+    <span style="font-family: Rubik, sans-serif; font-weight: 800; font-size: 18px">טלאור<span style="color: #5A6E62">/40</span></span>
+  </div>
+
+  <section style="background: #E3F2E7; color: #1E3328; border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+    <h1 style="margin: 0; font-family: Rubik, sans-serif; font-size: 28px; font-weight: 800; line-height: 1.15">40 דברים<br>שאוהבים בטלאור</h1>
+    <div style="display: flex; align-items: baseline; gap: 6px">
+      <span style="font-family: Rubik, sans-serif; font-size: 64px; font-weight: 900; line-height: 1; color: #2F6B3F">[N]</span>
+      <span style="font-size: 18px; color: #4D6657">מתוך 40</span>
+    </div>
+    <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(20, minmax(0, 1fr)); gap: 4px">
+      <sc-for list="{{dots}}" as="d" hint-placeholder-count="40"><span style="height: 10px; border-radius: 3px; background: {{d.color}}"></span></sc-for>
+    </div>
+  </section>
+
+  <form style="display: flex; gap: 8px">
+    <label style="flex: 1; display: flex">
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">משהו שאתם אוהבים בטלאור</span>
+      <input type="text" placeholder="משהו שאתם אוהבים בטלאור…" style="flex: 1; min-height: 56px; box-sizing: border-box; border: 1px solid #E3E9E1; border-radius: 18px; padding: 0 16px; background: #FFFFFF; font-family: Heebo, sans-serif; font-size: 16px; color: #1E3328">
+    </label>
+    <button type="button" aria-label="הוספה" style="width: 56px; height: 56px; border: 0; border-radius: 18px; background: {{accent}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+    </button>
+  </form>
+
+  <ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+    <li style="background: #FFFFFF; border: 1px solid #E3E9E1; border-radius: 20px; padding: 14px 16px; display: flex; gap: 14px; align-items: flex-start">
+      <span style="flex: none; font-family: Rubik, sans-serif; font-size: 22px; font-weight: 800; width: 34px">01</span>
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 1.5">[הדבר שאוהבים]</span><span style="font-size: 12px; color: #5A6E62">[שם]</span></span>
+    </li>
+    <li style="background: #FFFFFF; border: 1px solid #E3E9E1; border-radius: 20px; padding: 14px 16px; display: flex; gap: 14px; align-items: flex-start">
+      <span style="flex: none; font-family: Rubik, sans-serif; font-size: 22px; font-weight: 800; width: 34px">02</span>
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 1.5">[הדבר שאוהבים]</span><span style="font-size: 12px; color: #5A6E62">[שם]</span></span>
+    </li>
+    <li style="background: #DDF5E6; border-radius: 20px; padding: 14px 16px; display: flex; gap: 14px; align-items: flex-start">
+      <span style="flex: none; font-family: Rubik, sans-serif; font-size: 22px; font-weight: 800; width: 34px">03</span>
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; line-height: 1.5">[הדבר שאוהבים]</span><span style="font-size: 12px; color: #5A6E62">[שם]</span></span>
+    </li>
+    <li style="border: 1.5px dashed #B8C7BD; border-radius: 20px; padding: 14px 16px; display: flex; gap: 14px; align-items: center; color: #5A6E62">
+      <span style="flex: none; font-family: Rubik, sans-serif; font-size: 22px; font-weight: 800; width: 34px">04</span>
+      <span style="font-size: 15px">המקום הבא מחכה לכם</span>
+    </li>
+  </ol>
+  <p style="margin: 0 4px; font-size: 13px; line-height: 1.6; color: #5A6E62">לפני יום ההולדת מוצגים רק המספר והמקומות הפנויים. התוכן נחשף ב-5.2.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#469F76&quot;,&quot;options&quot;:[&quot;#16C172&quot;,&quot;#3FD9A0&quot;,&quot;#8BD450&quot;,&quot;#00A86B&quot;]},&quot;filled&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:17,&quot;min&quot;:0,&quot;max&quot;:40,&quot;step&quot;:1},&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:980}}">
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#469F76';
+    const filled = this.props.filled ?? 17;
+    const dots = Array.from({ length: 40 }, (_, i) => ({ color: i < filled ? accent : '#FFFFFF' }));
+    return { accent, dots };
+  }
+}
+</script>
+</body>
+</html>

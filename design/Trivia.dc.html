@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>טריוויה על טלאור</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&amp;family=Heebo:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1E3328}a:hover{color:#0F1F17}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 844px; box-sizing: border-box; background: #E3F2E7; font-family: Heebo, sans-serif; color: #1E3328; display: flex; flex-direction: column; gap: 20px; padding: 16px">
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px">
+    <a href="Wall.dc.html" aria-label="חזרה" style="width: 44px; height: 44px; border-radius: 50%; background: #CDE8D6; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+    <span style="font-family: Rubik, sans-serif; font-size: 15px; font-weight: 700">שאלה 3 מתוך [N]</span>
+  </div>
+
+  <div aria-hidden="true" style="display: flex; gap: 6px">
+    <span style="flex: 1; height: 6px; border-radius: 3px; background: {{accent}}"></span>
+    <span style="flex: 1; height: 6px; border-radius: 3px; background: {{accent}}"></span>
+    <span style="flex: 1; height: 6px; border-radius: 3px; background: #F5F7F2"></span>
+    <span style="flex: 1; height: 6px; border-radius: 3px; background: #CDE8D6"></span>
+    <span style="flex: 1; height: 6px; border-radius: 3px; background: #CDE8D6"></span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px; padding: 12px 4px">
+    <span style="font-size: 13px; font-weight: 700; color: #2F6B3F">נשאל ע״י [שם]</span>
+    <h1 style="margin: 0; font-family: Rubik, sans-serif; font-size: 32px; font-weight: 800; line-height: 1.2">[השאלה על טלאור]</h1>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <button type="button" style="min-height: 64px; border: 0; border-radius: 20px; background: #CDE8D6; color: #1E3328; padding: 0 18px; font-family: Heebo, sans-serif; font-size: 17px; font-weight: 500; display: flex; align-items: center; gap: 14px; text-align: right; cursor: pointer"><span style="font-family: Rubik, sans-serif; font-weight: 800; color: #4D6657">א</span>[תשובה]</button>
+    <button type="button" style="min-height: 64px; border: 0; border-radius: 20px; background: {{accent}}; color: #1E3328; padding: 0 18px; font-family: Heebo, sans-serif; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 14px; text-align: right; cursor: pointer"><span style="font-family: Rubik, sans-serif; font-weight: 800">ב</span>[תשובה נכונה]<svg aria-hidden="true" style="margin-right: auto" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></button>
+    <button type="button" style="min-height: 64px; border: 0; border-radius: 20px; background: #CDE8D6; color: #1E3328; padding: 0 18px; font-family: Heebo, sans-serif; font-size: 17px; font-weight: 500; display: flex; align-items: center; gap: 14px; text-align: right; cursor: pointer"><span style="font-family: Rubik, sans-serif; font-weight: 800; color: #4D6657">ג</span>[תשובה]</button>
+    <button type="button" style="min-height: 64px; border: 0; border-radius: 20px; background: #CDE8D6; color: #1E3328; padding: 0 18px; font-family: Heebo, sans-serif; font-size: 17px; font-weight: 500; display: flex; align-items: center; gap: 14px; text-align: right; cursor: pointer"><span style="font-family: Rubik, sans-serif; font-weight: 800; color: #4D6657">ד</span>[תשובה]</button>
+  </div>
+
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px">
+    <button type="button" style="min-height: 60px; border: 0; border-radius: 22px; background: #F5F7F2; color: #1E3328; font-family: Rubik, sans-serif; font-size: 18px; font-weight: 700; cursor: pointer">לשאלה הבאה</button>
+    <a href="Extras.dc.html" style="align-self: center; padding: 12px; font-size: 15px; font-weight: 500">גם אני רוצה לשאול שאלה</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#469F76&quot;,&quot;options&quot;:[&quot;#16C172&quot;,&quot;#3FD9A0&quot;,&quot;#8BD450&quot;,&quot;#00A86B&quot;]},&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#469F76' };
+  }
+}
+</script>
+</body>
+</html>
