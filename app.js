@@ -68,7 +68,7 @@
     const img = new Image();
     img.alt = 'טלאור';
     img.onload = () => { $('heroPhoto').prepend(img); $('heroPhoto').classList.add('has-photo'); };
-    img.src = CFG.HERO_IMAGE + '?v=3';
+    img.src = CFG.HERO_IMAGE + '?v=4';
 
     if (PREVIEW) {
       openPreview();
