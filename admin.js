@@ -17,6 +17,7 @@
       await refresh();
       $('pw').value = '';
     } catch (err) {
+      password = '';
       $('loginError').textContent = err.message;
     } finally {
       $('btnLogin').disabled = false;
@@ -53,7 +54,10 @@
 
   async function refresh() {
     $('dashStatus').textContent = 'טוענים…';
-    const data = await callApi('admin_list', { password });
+    const pw = password;
+    const data = await callApi('admin_list', { password: pw });
+    // תשובה שהגיעה באיחור, אחרי ניסיון כניסה אחר או יציאה – מתעלמים ממנה
+    if (!pw || pw !== password) throw Object.assign(new Error('סיסמה שגויה.'), { code: 'auth' });
     $('login').hidden = true;
     $('dash').hidden = false;
     $('dashStatus').textContent = '';
