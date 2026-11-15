@@ -16,7 +16,13 @@
   const LETTERS = ['א', 'ב', 'ג', 'ד'];
 
   /* תצוגה מקדימה למנהל: index.html?preview, עם הסיסמה שנשמרה בלשונית בדף הניהול */
-  const ADMIN_PW = (() => { try { return sessionStorage.getItem('talor40_admin') || ''; } catch (e) { return ''; } })();
+  const ADMIN_PW = (() => {
+    try {
+      const pw = sessionStorage.getItem('talor40_preview') || '';
+      sessionStorage.removeItem('talor40_preview'); // שימוש חד-פעמי
+      return pw;
+    } catch (e) { return ''; }
+  })();
   const PREVIEW = /[?&]preview\b/.test(location.search) && !!ADMIN_PW;
 
   /* ---------------- ניווט בין מסכים ---------------- */

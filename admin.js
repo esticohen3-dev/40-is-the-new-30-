@@ -2,18 +2,10 @@
   'use strict';
 
   const $ = (id) => document.getElementById(id);
-  const KEY = 'talor40_admin';
+  // הסיסמה נשמרת רק בזיכרון של הדף: כל כניסה לדף הניהול דורשת סיסמה.
+  // מנקים שארית מגרסה קודמת שזכרה את הסיסמה בלשונית.
+  try { sessionStorage.removeItem('talor40_admin'); } catch (e) { /* אין גישה – לא נורא */ }
   let password = '';
-
-  function store(value) {
-    try {
-      if (value) sessionStorage.setItem(KEY, value);
-      else sessionStorage.removeItem(KEY);
-    } catch (e) { /* גלישה פרטית – פשוט לא זוכרים */ }
-  }
-  function load() {
-    try { return sessionStorage.getItem(KEY) || ''; } catch (e) { return ''; }
-  }
 
   $('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -23,7 +15,6 @@
     $('btnLogin').textContent = 'בודקים…';
     try {
       await refresh();
-      store(password);
       $('pw').value = '';
     } catch (err) {
       $('loginError').textContent = err.message;
@@ -47,7 +38,6 @@
 
   function logout() {
     password = '';
-    store('');
     $('dash').hidden = true;
     $('login').hidden = false;
   }
@@ -214,9 +204,10 @@
   }
 
   /* תצוגה מקדימה: האתר עצמו במצב מנהל (משתמש בסיסמה שנשמרה בלשונית) */
-  $('btnPreview').addEventListener('click', () => { location.href = 'index.html?preview'; });
+  // מעבירים את הסיסמה לדף התצוגה פעם אחת בלבד: הוא קורא ומוחק אותה מיד
+  $('btnPreview').addEventListener('click', () => {
+    try { sessionStorage.setItem('talor40_preview', password); } catch (e) { /* בלי זה התצוגה לא תיטען */ }
+    location.href = 'index.html?preview';
+  });
 
-  // כניסה אוטומטית אם הסיסמה כבר נשמרה בלשונית הזו
-  password = load();
-  if (password) refresh().catch((err) => { logout(); $('loginError').textContent = err.message; });
 })();
