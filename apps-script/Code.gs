@@ -60,6 +60,7 @@ function doPost(e) {
       case 'admin_list': requireAdmin_(req); return json_(adminList_());
       case 'admin_hide': requireAdmin_(req); return json_(adminSetHidden_(req.id, req.hidden === true));
       case 'admin_delete': requireAdmin_(req); return json_(adminDelete_(req.id));
+      case 'admin_file': requireAdmin_(req); return json_(adminFile_(req.id));
       default: return json_({ ok: false, error: 'פעולה לא מוכרת.' });
     }
   } catch (err) {
@@ -327,6 +328,14 @@ function adminDelete_(id) {
     lock.releaseLock();
   }
   return { ok: true };
+}
+
+/** תוכן קובץ של ברכה, לתצוגה המקדימה בדף המנהל (הקבצים פרטיים עד יום ההולדת). */
+function adminFile_(id) {
+  var g = readGreetings_().filter(function (x) { return x.id === id; })[0];
+  if (!g || !g.fileId) throw userError_('הקובץ לא נמצא.');
+  var blob = DriveApp.getFileById(g.fileId).getBlob();
+  return { ok: true, mimeType: blob.getContentType(), data: Utilities.base64Encode(blob.getBytes()) };
 }
 
 function findRow_(id) {

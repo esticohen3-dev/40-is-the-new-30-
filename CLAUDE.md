@@ -5,7 +5,7 @@ Greeting page for Talor's 40th birthday. Full spec (Hebrew): see README.md.
 ## Architecture
 - Static frontend (plain HTML/CSS/JS, no framework, no build step) on GitHub Pages.
 - Backend: `apps-script/Code.gs`, deployed as a Google Apps Script Web App, bound to a Google Sheet deliberately named `פרויקט עבודה` (it is a surprise; keep names in Drive/GitHub neutral). Files go to a private Drive folder.
-- All requests are `POST` with `Content-Type: text/plain` and a JSON body `{action, ...}` (avoids CORS preflight, which Apps Script can't answer). Actions: `submit`, `list`, `admin_list`, `admin_hide`, `admin_delete`.
+- All requests are `POST` with `Content-Type: text/plain` and a JSON body `{action, ...}` (avoids CORS preflight, which Apps Script can't answer). Actions: `submit`, `list`, `admin_list`, `admin_hide`, `admin_delete`, `admin_file` (admin preview of a private file).
 
 ## Rules
 - UI text is Hebrew, RTL, mobile-first. Keep wording gender-neutral (plural imperative) for guests.

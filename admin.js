@@ -4,6 +4,7 @@
   const $ = (id) => document.getElementById(id);
   const KEY = 'talor40_admin';
   let password = '';
+  let lastData = null;
 
   function store(value) {
     try {
@@ -71,6 +72,7 @@
   }
 
   function render(data) {
+    lastData = data;
     const all = data.greetings;
     const hidden = all.filter((g) => g.hidden).length;
     const images = all.filter((g) => g.type === 'image').length;
@@ -193,6 +195,110 @@
       busy('');
     }
   }
+
+  /* ---------------- תצוגה מקדימה של הקיר ---------------- */
+
+  const fileCache = {}; // id -> Promise<blob URL>
+
+  function fetchFile(id) {
+    if (!fileCache[id]) {
+      fileCache[id] = callApi('admin_file', { password, id }).then((r) => {
+        const bin = atob(r.data);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return URL.createObjectURL(new Blob([bytes], { type: r.mimeType }));
+      });
+      fileCache[id].catch(() => { delete fileCache[id]; });
+    }
+    return fileCache[id];
+  }
+
+  $('btnPreview').addEventListener('click', openPreview);
+  $('btnClosePreview').addEventListener('click', () => {
+    $('preview').hidden = true;
+    document.body.classList.remove('previewing');
+    $('previewWall').querySelectorAll('video').forEach((v) => v.pause());
+  });
+
+  async function openPreview() {
+    if (!lastData) return;
+    const items = lastData.greetings.filter((g) => !g.hidden);
+    const wall = $('previewWall');
+    wall.textContent = '';
+    $('previewStatus').textContent = items.length ? '' : 'עוד אין ברכות.';
+    document.body.classList.add('previewing');
+    $('preview').hidden = false;
+    window.scrollTo(0, 0);
+
+    const images = [];
+    items.forEach((g) => {
+      const c = el('article', 'gcard');
+      if (g.type === 'image' && g.fileId) {
+        const wrap = el('button', 'gmedia gimage');
+        wrap.type = 'button';
+        const img = el('img');
+        img.alt = 'תמונה מ' + g.name;
+        if (g.thumb) img.src = g.thumb; // תמונה קטנה עד שהמלאה נטענת
+        wrap.appendChild(img);
+        wrap.addEventListener('click', () => {
+          $('lightboxImg').src = img.src;
+          $('lightbox').hidden = false;
+        });
+        c.appendChild(wrap);
+        images.push([g, img]);
+      }
+      if (g.type === 'video' && g.fileId) c.appendChild(previewVideo(g));
+      if (g.message) c.appendChild(el('p', 'gmessage', g.message));
+      const foot = el('footer', 'gfoot');
+      foot.appendChild(el('span', 'gname', g.name));
+      foot.appendChild(el('span', 'gdate', formatTimestamp(g.timestamp)));
+      c.appendChild(foot);
+      wall.appendChild(c);
+    });
+
+    // טוענים את התמונות המלאות אחת אחרי השנייה כדי לא להעמיס על השרת
+    for (const [g, img] of images) {
+      if ($('preview').hidden) break;
+      try {
+        const url = await fetchFile(g.id);
+        img.onerror = () => { img.onerror = null; if (g.thumb) img.src = g.thumb; };
+        img.src = url;
+      } catch (e) { /* נשארת התמונה הקטנה */ }
+    }
+  }
+
+  function previewVideo(g) {
+    const wrap = el('div', 'gmedia gvideo preview-video');
+    if (g.thumb) {
+      const img = el('img');
+      img.src = g.thumb;
+      img.alt = '';
+      wrap.appendChild(img);
+    }
+    const play = el('button', 'preview-play', '▶ הפעלת הסרטון');
+    play.type = 'button';
+    play.addEventListener('click', async () => {
+      play.disabled = true;
+      play.textContent = 'טוענים את הסרטון…';
+      try {
+        const url = await fetchFile(g.id);
+        const v = el('video');
+        v.controls = true;
+        v.playsInline = true;
+        v.src = url;
+        wrap.textContent = '';
+        wrap.appendChild(v);
+        v.play().catch(() => {});
+      } catch (err) {
+        play.disabled = false;
+        play.textContent = 'הטעינה נכשלה. לנסות שוב';
+      }
+    });
+    wrap.appendChild(play);
+    return wrap;
+  }
+
+  $('lightbox').addEventListener('click', () => { $('lightbox').hidden = true; });
 
   // כניסה אוטומטית אם הסיסמה כבר נשמרה בלשונית הזו
   password = load();

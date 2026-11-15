@@ -33,6 +33,7 @@
     <section id="dash" hidden>
       <div class="toolbar">
         <a class="btn ghost" href="./">לדף הראשי</a>
+        <button type="button" class="btn ghost" id="btnPreview">תצוגה מקדימה</button>
         <button type="button" class="btn ghost" id="btnRefresh">רענון</button>
         <button type="button" class="btn ghost" id="btnLogout">יציאה</button>
       </div>
@@ -55,6 +56,31 @@
       <div class="admin-list" id="list"></div>
     </section>
   </main>
+
+  <section id="preview" class="preview-page" hidden>
+    <div class="preview-bar">
+      <span>תצוגה מקדימה: ככה ייראה הקיר ביום ההולדת (בלי ברכות מוסתרות)</span>
+      <button type="button" class="btn primary small" id="btnClosePreview">סגירה</button>
+    </div>
+    <header class="hero">
+      <div class="confetti" aria-hidden="true"></div>
+      <div class="badge" aria-hidden="true">40</div>
+      <h1>40 לטלאור!</h1>
+      <p class="hero-sub">מזל טוב! הנה כל הברכות</p>
+    </header>
+    <main class="container">
+      <div class="wall-head">
+        <p class="wall-title">המון אהבה ממי שאוהבים אותך 💛</p>
+      </div>
+      <p class="status" id="previewStatus"></p>
+      <div class="wall" id="previewWall"></div>
+    </main>
+  </section>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button type="button" class="lightbox-close" aria-label="סגירה">✕</button>
+    <img id="lightboxImg" alt="">
+  </div>
 
   <div class="busy" id="busy" role="status" aria-live="polite" hidden>
     <div class="busy-box">
