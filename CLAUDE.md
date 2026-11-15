@@ -19,7 +19,7 @@ Greeting page for Talor's 40th birthday. Full spec (Hebrew): see README.md.
 - Render user content with `textContent`, never `innerHTML`.
 - Limits live in two places and must match: `config.js` (client) and `CONFIG` in `Code.gs` (server).
 - Do not use XHR upload progress events: they force a CORS preflight that Apps Script rejects.
-- `Code.gs` changes only take effect after the owner publishes a new deployment version.
+- `Code.gs` changes only take effect after a new deployment version is published. `.github/workflows/deploy-apps-script.yml` does this automatically (clasp) on push to main, once secrets `CLASPRC_JSON` + `SCRIPT_ID` are set.
 
 ## Testing
 No test suite. `node --check` each JS file (copy `Code.gs` to a `.js` to check it). Browser flows can be smoke-tested with Playwright by serving the folder locally and routing the Web App URL to a mock.
@@ -27,4 +27,4 @@ No test suite. `node --check` each JS file (copy `Code.gs` to a `.js` to check i
 ## Status (Nov 2026)
 Done: Sheet + Apps Script set up and deployed (URL in config.js), site live on GitHub Pages, test greeting sent, admin page works, secret 5-tap entry on the "40" badge works.
 Next: add `img/talor.jpg`; paste new Code.gs + publish new deployment (redesign added columns, `counts`, `admin_file`); fill the guests tab; phone tests (image, short video, >30s video blocked, unlock check via BIRTHDAY_DATE override); delete test greetings; send link to guests.
-Changes to Code.gs need the owner to paste it into Apps Script and publish a new deployment version.
+Auto-deploy workflow added; owner still needs to add the two secrets and run it once.

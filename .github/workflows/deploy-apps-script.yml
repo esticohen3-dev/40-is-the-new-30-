@@ -1,0 +1,55 @@
+# מעדכן ומפרסם את צד השרת (Apps Script) אוטומטית אחרי כל שינוי ב-apps-script/Code.gs ב-main.
+# צריך שני secrets בריפו: CLASPRC_JSON (התוכן של ~/.clasprc.json אחרי clasp login) ו-SCRIPT_ID.
+name: Deploy Apps Script
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps-script/Code.gs']
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-apps-script
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install clasp
+        run: npm install -g @google/clasp@2.4.2
+
+      - name: Credentials
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ] || [ -z "$SCRIPT_ID" ]; then
+            echo "::error::Missing CLASPRC_JSON or SCRIPT_ID secret"; exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+          mkdir -p work
+          printf '{"scriptId":"%s","rootDir":"."}' "$SCRIPT_ID" > work/.clasp.json
+
+      - name: Push code
+        working-directory: work
+        run: |
+          # מושכים את הפרויקט הקיים כדי לשמור על appsscript.json שלו, ומחליפים את כל קובצי הקוד ב-Code.gs מהריפו
+          clasp pull
+          find . -maxdepth 1 \( -name '*.js' -o -name '*.gs' \) -delete
+          cp ../apps-script/Code.gs Code.js
+          clasp push --force
+
+      - name: Publish new version of the existing Web App
+        working-directory: work
+        run: |
+          # אותו deployment שהאתר משתמש בו (מתוך config.js), כך שהכתובת לא משתנה
+          DEPLOYMENT_ID=$(grep -oE 'macros/s/[A-Za-z0-9_-]+/exec' ../config.js | sed -E 's#macros/s/(.*)/exec#\1#')
+          if [ -z "$DEPLOYMENT_ID" ]; then echo "::error::No Web App URL in config.js"; exit 1; fi
+          clasp deploy --deploymentId "$DEPLOYMENT_ID" --description "auto ${GITHUB_SHA::7}"
