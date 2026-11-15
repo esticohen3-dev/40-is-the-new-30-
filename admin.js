@@ -75,19 +75,24 @@
     lastData = data;
     const all = data.greetings;
     const hidden = all.filter((g) => g.hidden).length;
-    const images = all.filter((g) => g.type === 'image').length;
-    const videos = all.filter((g) => g.type === 'video').length;
+    const kindCount = (k) => all.filter((g) => (g.kind || 'greeting') === k).length;
+    const greetings = all.filter((g) => (g.kind || 'greeting') === 'greeting');
+    const images = greetings.filter((g) => g.type === 'image').length;
+    const videos = greetings.filter((g) => g.type === 'video').length;
     const guests = data.guests;
     const sentGuests = guests.filter((g) => g.sent).length;
 
     const stats = $('stats');
     stats.textContent = '';
     [
-      [all.length + ' / ' + data.maxGreetings, 'ברכות'],
-      [all.length - hidden, 'גלויות'],
-      [hidden, 'מוסתרות'],
-      [images, 'תמונות'],
-      [videos, 'סרטונים'],
+      [greetings.length, 'ברכות'],
+      [images, 'ברכות עם תמונה'],
+      [videos, 'ברכות עם סרטון'],
+      [kindCount('past_photo'), 'תמונות מהעבר'],
+      [kindCount('love') + ' / 40', 'דברים שאוהבים'],
+      [kindCount('trivia'), 'שאלות טריוויה'],
+      [hidden, 'מוסתרים'],
+      [all.length + ' / ' + data.maxGreetings, 'סה"כ פריטים'],
       [guests.length ? `${sentGuests} / ${guests.length}` : '–', 'מוזמנים ששלחו']
     ].forEach(([num, label]) => {
       const box = el('div', 'stat');
@@ -104,7 +109,7 @@
     const pending = guests.filter((g) => !g.sent);
     $('pendingTitle').textContent = `מי עוד לא שלח (${pending.length})`;
     fillList($('pendingList'), pending.map((g) => g.phone ? `${g.name} · ${g.phone}` : g.name),
-      guests.length ? 'כולם שלחו! 🎉' : 'רשימת המוזמנים ריקה. ממלאים אותה בלשונית "מוזמנים" בגיליון.');
+      guests.length ? 'כולם שלחו!' : 'רשימת המוזמנים ריקה. ממלאים אותה בלשונית "מוזמנים" בגיליון.');
 
     // שמות לא מזוהים
     const unmatched = [...new Set(all.filter((g) => g.inGuestList === 'לבדוק').map((g) => g.name))];
@@ -114,7 +119,7 @@
     // ברכות
     const list = $('list');
     list.textContent = '';
-    if (!all.length) list.appendChild(el('p', 'status', 'עוד אין ברכות.'));
+    if (!all.length) list.appendChild(el('p', 'status', 'עוד אין כלום.'));
     all.forEach((g) => list.appendChild(card(g)));
   }
 
@@ -128,6 +133,7 @@
   }
 
   const TYPE_LABEL = { text: 'טקסט', image: 'תמונה', video: 'סרטון' };
+  const KIND_LABEL = { greeting: 'ברכה', past_photo: 'תמונה מהעבר', love: 'דבר שאוהבים', trivia: 'טריוויה' };
 
   function card(g) {
     const c = el('article', 'acard' + (g.hidden ? ' is-hidden' : ''));
@@ -144,7 +150,7 @@
         img.alt = '';
         media.appendChild(img);
       } else {
-        media.appendChild(el('span', 'athumb-icon', g.type === 'video' ? '🎬' : '🖼️'));
+        media.appendChild(el('span', 'athumb-icon', g.type === 'video' ? 'סרטון' : 'תמונה'));
       }
       if (g.type === 'video') media.appendChild(el('span', 'play-badge', '▶'));
       c.appendChild(media);
@@ -153,7 +159,10 @@
     const body = el('div', 'abody');
     const head = el('div', 'ahead');
     head.appendChild(el('strong', '', g.name));
-    head.appendChild(el('span', 'tag', TYPE_LABEL[g.type] || g.type));
+    const kind = g.kind || 'greeting';
+    head.appendChild(el('span', 'tag kind', KIND_LABEL[kind] || kind));
+    if (kind === 'greeting') head.appendChild(el('span', 'tag', TYPE_LABEL[g.type] || g.type));
+    if (g.era) head.appendChild(el('span', 'tag', g.era));
     if (g.hidden) head.appendChild(el('span', 'tag warn', 'מוסתרת'));
     if (g.inGuestList === 'לבדוק') head.appendChild(el('span', 'tag', 'לא ברשימה'));
     body.appendChild(head);
@@ -161,17 +170,27 @@
     const meta = formatTimestamp(g.timestamp) + (g.size ? ` · ${(g.size / 1048576).toFixed(1)}MB` : '');
     body.appendChild(el('p', 'ameta', meta));
     if (g.message) body.appendChild(el('p', 'amessage', g.message));
+    if (g.caption) body.appendChild(el('p', 'amessage', 'כיתוב: ' + g.caption));
+    if (g.trivia && g.trivia.answers) {
+      const ol = el('ol', 'atrivia');
+      g.trivia.answers.forEach((a, i) => {
+        const correct = i === Number(g.trivia.correct);
+        ol.appendChild(el('li', correct ? 'correct' : '', a + (correct ? ' ✓' : '')));
+      });
+      body.appendChild(ol);
+    }
 
     const actions = el('div', 'actions');
     const toggle = el('button', 'btn ghost small', g.hidden ? 'הצגה' : 'הסתרה');
     toggle.type = 'button';
     toggle.addEventListener('click', () => act(toggle, 'admin_hide', { id: g.id, hidden: !g.hidden },
-      g.hidden ? 'מציגים את הברכה…' : 'מסתירים את הברכה…'));
+      g.hidden ? 'מציגים…' : 'מסתירים…'));
     const del = el('button', 'btn danger small', 'מחיקה');
     del.type = 'button';
     del.addEventListener('click', () => {
-      const what = g.fileId ? 'הברכה והקובץ שלה יימחקו' : 'הברכה תימחק';
-      if (confirm(`למחוק את הברכה של ${g.name}?\n${what} לצמיתות.`)) act(del, 'admin_delete', { id: g.id }, 'מוחקים את הברכה…');
+      const label = KIND_LABEL[kind] || 'ברכה';
+      const what = g.fileId ? 'הפריט והקובץ שלו יימחקו' : 'הפריט יימחק';
+      if (confirm(`למחוק (${label}) של ${g.name}?\n${what} לצמיתות.`)) act(del, 'admin_delete', { id: g.id }, 'מוחקים…');
     });
     actions.appendChild(toggle);
     actions.appendChild(del);
@@ -222,19 +241,25 @@
 
   async function openPreview() {
     if (!lastData) return;
-    const items = lastData.greetings.filter((g) => !g.hidden);
+    const items = lastData.greetings.filter((g) => !g.hidden && (g.kind || 'greeting') === 'greeting');
     const wall = $('previewWall');
     wall.textContent = '';
+    $('previewCount').textContent = `${items.length} ברכות ממי שאוהבים אותך`;
     $('previewStatus').textContent = items.length ? '' : 'עוד אין ברכות.';
     document.body.classList.add('previewing');
     $('preview').hidden = false;
-    window.scrollTo(0, 0);
+    $('preview').scrollTop = 0;
 
+    const cols = [el('div', 'masonry-col'), el('div', 'masonry-col')];
+    const heights = [0, 0];
     const images = [];
+    let textCount = 0;
     items.forEach((g) => {
-      const c = el('article', 'gcard');
+      let c;
+      let h;
       if (g.type === 'image' && g.fileId) {
-        const wrap = el('button', 'gmedia gimage');
+        c = el('article', 'wcard');
+        const wrap = el('button', 'wimg');
         wrap.type = 'button';
         const img = el('img');
         img.alt = 'תמונה מ' + g.name;
@@ -245,16 +270,29 @@
           $('lightbox').hidden = false;
         });
         c.appendChild(wrap);
+        c.appendChild(cardBody(g));
         images.push([g, img]);
+        h = 260;
+      } else if (g.type === 'video' && g.fileId) {
+        c = el('article', 'wcard video');
+        c.appendChild(previewVideo(g));
+        c.appendChild(cardBody(g));
+        h = 260;
+      } else {
+        textCount++;
+        const accent = textCount % 4 === 2;
+        c = el('article', 'wcard text' + (accent ? ' accent' : ''));
+        if (accent) c.appendChild(el('span', 'quote', '”'));
+        c.appendChild(el('p', 'wmsg', g.message));
+        c.appendChild(el('strong', 'wname', g.name));
+        h = 80;
       }
-      if (g.type === 'video' && g.fileId) c.appendChild(previewVideo(g));
-      if (g.message) c.appendChild(el('p', 'gmessage', g.message));
-      const foot = el('footer', 'gfoot');
-      foot.appendChild(el('span', 'gname', g.name));
-      foot.appendChild(el('span', 'gdate', formatTimestamp(g.timestamp)));
-      c.appendChild(foot);
-      wall.appendChild(c);
+      h += (g.message || '').length / 1.5;
+      const i = heights[0] <= heights[1] ? 0 : 1;
+      cols[i].appendChild(c);
+      heights[i] += h;
     });
+    cols.forEach((col) => wall.appendChild(col));
 
     // טוענים את התמונות המלאות אחת אחרי השנייה כדי לא להעמיס על השרת
     for (const [g, img] of images) {
@@ -267,19 +305,27 @@
     }
   }
 
+  function cardBody(g) {
+    const body = el('div', 'wbody');
+    body.appendChild(el('strong', 'wname', g.name));
+    if (g.message) body.appendChild(el('p', 'wmsg small', g.message));
+    return body;
+  }
+
   function previewVideo(g) {
-    const wrap = el('div', 'gmedia gvideo preview-video');
+    const wrap = el('div', 'wvideo' + (g.thumb ? ' has-thumb' : ''));
     if (g.thumb) {
       const img = el('img');
       img.src = g.thumb;
       img.alt = '';
       wrap.appendChild(img);
     }
-    const play = el('button', 'preview-play', '▶ הפעלת הסרטון');
+    const play = el('button', 'play-btn', '▶');
     play.type = 'button';
+    play.setAttribute('aria-label', 'הפעלת הסרטון');
     play.addEventListener('click', async () => {
       play.disabled = true;
-      play.textContent = 'טוענים את הסרטון…';
+      play.textContent = '…';
       try {
         const url = await fetchFile(g.id);
         const v = el('video');
@@ -287,11 +333,13 @@
         v.playsInline = true;
         v.src = url;
         wrap.textContent = '';
+        wrap.classList.add('playing');
         wrap.appendChild(v);
         v.play().catch(() => {});
       } catch (err) {
         play.disabled = false;
-        play.textContent = 'הטעינה נכשלה. לנסות שוב';
+        play.textContent = '▶';
+        alert('הטעינה של הסרטון נכשלה. אפשר לנסות שוב.');
       }
     });
     wrap.appendChild(play);

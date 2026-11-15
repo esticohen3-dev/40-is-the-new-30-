@@ -4,57 +4,93 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#2b1d4e">
-  <title>40 לטלאור!</title>
+  <meta name="theme-color" content="#F5F7F2">
+  <title>טלאור/40</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;800;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="hero">
-    <div class="confetti" aria-hidden="true"></div>
-    <div class="badge" aria-hidden="true">40</div>
-    <h1>40 לטלאור!</h1>
-    <p class="hero-sub" id="heroSub">אוספים ברכות לקראת היום הגדול</p>
-  </header>
+  <main class="page">
 
-  <main class="container">
-
-    <!-- דף הבית: ספירה לאחור -->
+    <!-- ================= דף הבית ================= -->
     <section id="view-home" class="view">
-      <div class="countdown" id="countdown" aria-live="off">
-        <div class="unit"><span class="num" id="cdDays">–</span><span class="lbl">ימים</span></div>
-        <div class="unit"><span class="num" id="cdHours">–</span><span class="lbl">שעות</span></div>
-        <div class="unit"><span class="num" id="cdMinutes">–</span><span class="lbl">דקות</span></div>
-        <div class="unit"><span class="num" id="cdSeconds">–</span><span class="lbl">שניות</span></div>
-      </div>
-      <p class="lock-note" id="lockNote"></p>
-      <button type="button" class="btn primary big" data-action="start">השאירו ברכה</button>
+      <nav class="topbar">
+        <span class="logo" id="logo">טלאור<span>/40</span></span>
+        <span class="chip-date" id="dateChip"></span>
+      </nav>
+
+      <section class="card hero-card">
+        <div class="hero-photo" id="heroPhoto">
+          <div class="hero-photo-empty" aria-hidden="true">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+          </div>
+          <span class="hero-badge">טלאור בן 40!</span>
+        </div>
+        <div class="hero-text">
+          <h1>בואו נפתיע את טלאור ליום הולדת 40</h1>
+          <p>אנחנו אוספים ברכות וזיכרונות מכל מי שאוהב אותו. הכל נשאר בסוד, וטלאור יראה הכל ביום ההולדת.</p>
+        </div>
+      </section>
+
+      <button type="button" class="cta" data-action="start">
+        <span class="cta-text"><span class="cta-title">כתבו ברכה לטלאור</span><span class="cta-sub">לוקח בערך 2 דקות</span></span>
+        <svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      </button>
+
+      <section class="card how">
+        <h2>איך זה עובד</h2>
+        <ol>
+          <li><span class="step-num active">1</span><span><strong>כותבים ברכה</strong><span>אפשר לצרף תמונה או סרטון קצר</span></span></li>
+          <li><span class="step-num">2</span><span><strong>מוסיפים עוד, אם בא לכם</strong><span>תמונה מהעבר, משהו שאתם אוהבים בטלאור, או שאלת טריוויה עליו</span></span></li>
+          <li><span class="step-num">3</span><span><strong>ב-5.2 טלאור פותח הכל</strong><span>כל הברכות, התמונות והטריוויה נחשפים לו יחד</span></span></li>
+        </ol>
+      </section>
+
+      <section class="countdown-panel" id="countdownPanel">
+        <span class="panel-label">עד יום ההולדת נשארו</span>
+        <div class="countdown" aria-live="off">
+          <div class="unit"><span class="num" id="cdDays">–</span><span class="lbl">ימים</span></div>
+          <div class="unit"><span class="num" id="cdHours">–</span><span class="lbl">שעות</span></div>
+          <div class="unit"><span class="num" id="cdMinutes">–</span><span class="lbl">דקות</span></div>
+          <div class="unit"><span class="num" id="cdSeconds">–</span><span class="lbl">שניות</span></div>
+        </div>
+      </section>
+      <p class="lock-note" id="lockNote" hidden></p>
+
+      <p class="secret-line">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <span>זו הפתעה: אל תספרו לטלאור ואל תשלחו לו את הקישור.</span>
+      </p>
     </section>
 
-    <!-- קיר הברכות (מיום ההולדת) -->
-    <section id="view-wall" class="view" hidden>
-      <div class="wall-head">
-        <p class="wall-title">המון אהבה ממי שאוהבים אותך 💛</p>
-        <button type="button" class="btn ghost" data-action="start">גם אני רוצה לברך</button>
+    <!-- ================= שלב 1: הברכה ================= -->
+    <section id="view-form" class="view" hidden>
+      <div class="stepbar">
+        <button type="button" class="back-btn" data-action="home" aria-label="חזרה">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <div class="stepbar-info">
+          <span>שלב 1 מתוך 2</span>
+          <div class="progress" aria-hidden="true"><span class="on"></span><span></span></div>
+        </div>
       </div>
-      <p class="status" id="wallStatus" role="status"></p>
-      <div class="wall" id="wall"></div>
-    </section>
 
-    <!-- טופס -->
-    <section id="view-form" class="view card-panel" hidden>
-      <h2>ברכה לטלאור</h2>
-      <form id="greetForm" novalidate>
+      <div class="page-head">
+        <h1>הברכה שלכם לטלאור</h1>
+        <p>רק השם חובה. כתבו מה שבא מהלב.</p>
+      </div>
+
+      <form id="greetForm" class="card form-card" novalidate>
         <label class="field">
-          <span class="field-label">השם שלך <span class="req" aria-hidden="true">*</span></span>
-          <input type="text" id="fName" maxlength="40" autocomplete="name" required>
+          <span class="field-label">השם שלך</span>
+          <input type="text" id="fName" maxlength="40" autocomplete="name" placeholder="איך טלאור מכיר אתכם" required>
         </label>
 
         <label class="field">
           <span class="field-label">הברכה</span>
-          <textarea id="fMessage" rows="5" maxlength="500" placeholder="כמה מילים מהלב…"></textarea>
+          <textarea id="fMessage" rows="6" maxlength="500" placeholder="מזל טוב טלאור! …"></textarea>
           <span class="counter" id="msgCounter">0/500</span>
         </label>
 
@@ -63,55 +99,222 @@
           <label>אתר אינטרנט <input type="text" id="fWebsite" tabindex="-1" autocomplete="off"></label>
         </div>
 
-        <div class="notice" role="note">
-          אפשר לשלוח תמונה (עד 10MB) או סרטון של עד 30 שניות (עד 30MB). אפשר לצלם ישירות מהטלפון.
+        <div class="field">
+          <span class="field-label">תמונה או סרטון <span class="optional">(לא חובה)</span></span>
+          <label class="upload">
+            <input type="file" id="fFile" accept="image/*,video/*">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
+            <span class="upload-text"><strong>בחרו קובץ</strong><span>תמונה עד 10MB · סרטון עד 30 שניות</span></span>
+          </label>
+          <p class="file-status" id="fileStatus" role="status"></p>
+          <div class="preview" id="preview"></div>
+          <button type="button" class="link-btn danger" id="btnRemoveFile" hidden>הסרת הקובץ</button>
         </div>
-
-        <label class="file-btn">
-          <input type="file" id="fFile" accept="image/*,video/*">
-          <span>📷 בחירת תמונה או סרטון</span>
-        </label>
-        <p class="file-status" id="fileStatus" role="status"></p>
-        <div class="preview" id="preview"></div>
-        <button type="button" class="btn link" id="btnRemoveFile" hidden>הסרת הקובץ</button>
 
         <p class="form-error" id="formError" role="alert"></p>
-
-        <div class="actions">
-          <button type="submit" class="btn primary" id="btnContinue">המשך</button>
-          <button type="button" class="btn ghost" data-action="home">ביטול</button>
-        </div>
       </form>
+
+      <button type="submit" form="greetForm" class="btn-primary bottom" id="btnContinue">המשך</button>
     </section>
 
-    <!-- אישור לפני שליחה -->
-    <section id="view-confirm" class="view card-panel" hidden>
-      <h2>לשלוח את הברכה?</h2>
-      <div class="confirm-box">
-        <p class="confirm-name" id="cName"></p>
-        <p class="confirm-message" id="cMessage"></p>
-        <div class="preview" id="cPreview"></div>
+    <!-- ================= שלב 2: תוספות ================= -->
+    <section id="view-extras" class="view" hidden>
+      <div class="stepbar">
+        <button type="button" class="back-btn" id="btnExtrasBack" aria-label="חזרה">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <div class="stepbar-info">
+          <span>שלב 2 מתוך 2 · לא חובה</span>
+          <div class="progress" aria-hidden="true"><span class="on"></span><span class="on"></span></div>
+        </div>
       </div>
-      <p class="form-error" id="sendError" role="alert"></p>
-      <div class="actions">
-        <button type="button" class="btn primary" id="btnSend">כן, לשלוח</button>
-        <button type="button" class="btn ghost" id="btnBack">חזרה לעריכה</button>
+
+      <div class="page-head">
+        <h1>רוצים לתת לטלאור עוד משהו?</h1>
+        <p>כל אחד לוקח פחות מדקה. אפשר לבחור אחד, כמה, או לדלג.</p>
+      </div>
+
+      <!-- תמונה מהעבר -->
+      <section class="extra" id="exPhoto">
+        <button type="button" class="extra-head" aria-expanded="false">
+          <span class="icon-tile"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg></span>
+          <span class="extra-title"><strong>תמונה מהעבר</strong><span>לציר הזמן "40 שנה בתמונות"</span></span>
+          <svg class="plus" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="extra-body" hidden>
+          <fieldset class="chips-field">
+            <legend>מאיזו תקופה?</legend>
+            <div class="chips" id="eraChips"></div>
+          </fieldset>
+          <label class="upload small">
+            <input type="file" id="pFile" accept="image/*">
+            <span class="upload-text"><strong>בחרו תמונה</strong></span>
+          </label>
+          <p class="file-status" id="pFileStatus" role="status"></p>
+          <div class="preview" id="pPreview"></div>
+          <label class="field">
+            <span class="field-label">כמה מילים על התמונה <span class="optional">(לא חובה)</span></span>
+            <input type="text" id="pCaption" maxlength="100">
+          </label>
+        </div>
+      </section>
+
+      <!-- משהו שאוהבים -->
+      <section class="extra" id="exLove">
+        <button type="button" class="extra-head" aria-expanded="false">
+          <span class="icon-tile"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
+          <span class="extra-title"><strong>משהו שאתם אוהבים בטלאור</strong><span id="loveCountLine">ל"40 דברים שאוהבים בטלאור"</span></span>
+          <svg class="plus" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="extra-body" hidden>
+          <label class="field">
+            <span class="field-label">מה אתם אוהבים בטלאור?</span>
+            <input type="text" id="lText" maxlength="150">
+          </label>
+        </div>
+      </section>
+
+      <!-- טריוויה -->
+      <section class="extra" id="exTrivia">
+        <button type="button" class="extra-head" aria-expanded="false">
+          <span class="icon-tile q">?</span>
+          <span class="extra-title"><strong>שאלת טריוויה על טלאור</strong><span>שאלה ו-4 תשובות. טלאור ינסה לנחש</span></span>
+          <svg class="plus" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="extra-body" hidden>
+          <label class="field">
+            <span class="field-label">השאלה</span>
+            <input type="text" id="tQuestion" maxlength="150">
+          </label>
+          <fieldset class="answers">
+            <legend>4 תשובות. סמנו את הנכונה</legend>
+            <div class="answer-row"><input type="radio" name="tCorrect" value="0" aria-label="תשובה א נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה א"></div>
+            <div class="answer-row"><input type="radio" name="tCorrect" value="1" aria-label="תשובה ב נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה ב"></div>
+            <div class="answer-row"><input type="radio" name="tCorrect" value="2" aria-label="תשובה ג נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה ג"></div>
+            <div class="answer-row"><input type="radio" name="tCorrect" value="3" aria-label="תשובה ד נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה ד"></div>
+          </fieldset>
+        </div>
+      </section>
+
+      <p class="form-error" id="extrasError" role="alert"></p>
+
+      <div class="bottom-actions">
+        <button type="button" class="btn-primary" id="btnSend">שליחה לטלאור</button>
+        <button type="button" class="link-btn" id="btnSkip">דלגו ושלחו רק את הברכה</button>
       </div>
     </section>
 
-    <!-- שליחה -->
-    <section id="view-sending" class="view card-panel center" hidden>
-      <div class="spinner" aria-hidden="true"></div>
-      <h2>שולחים…</h2>
-      <p id="sendingNote">רק רגע.</p>
+    <!-- ================= שליחה ================= -->
+    <section id="view-sending" class="view" hidden>
+      <section class="card center-card">
+        <div class="spinner" aria-hidden="true"></div>
+        <h1>שולחים…</h1>
+        <p id="sendingNote">רק רגע.</p>
+      </section>
     </section>
 
-    <!-- תודה -->
-    <section id="view-done" class="view card-panel center" hidden>
-      <div class="big-emoji" aria-hidden="true">🎉</div>
-      <h2>תודה! הברכה נשלחה.</h2>
-      <p>טלאור יראה אותה ביום ההולדת.</p>
-      <button type="button" class="btn ghost" data-action="home">חזרה לדף הראשי</button>
+    <!-- ================= תודה ================= -->
+    <section id="view-done" class="view" hidden>
+      <section class="card center-card thanks">
+        <span class="check-circle"><svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>
+        <h1>תודה! נשמר</h1>
+        <p id="thanksLine"></p>
+      </section>
+      <section class="mint-note">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <p><strong>שמרו על הסוד.</strong> מכירים עוד מישהו שאוהב את טלאור? שלחו לו את הקישור (רק לא לטלאור).</p>
+      </section>
+      <div class="bottom-actions">
+        <button type="button" class="btn-primary" id="btnShare">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+          שיתוף הקישור לחברים
+        </button>
+        <button type="button" class="btn-secondary" id="btnAddMore">להוסיף עוד משהו</button>
+      </div>
+    </section>
+
+    <!-- ================= קיר הברכות (מיום ההולדת) ================= -->
+    <section id="view-wall" class="view" hidden>
+      <section class="wall-hero">
+        <div class="big-40" aria-hidden="true">40</div>
+        <h1>מזל טוב<br>טלאור!</h1>
+        <p id="wallCount"></p>
+      </section>
+
+      <nav class="tiles" aria-label="עוד הפתעות">
+        <button type="button" data-go="timeline">40 שנה בתמונות</button>
+        <button type="button" data-go="forty">40 דברים שאוהבים</button>
+        <button type="button" data-go="trivia">טריוויה</button>
+      </nav>
+
+      <div class="chips filter" id="wallFilter">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">הכל</button>
+        <button type="button" class="chip" data-filter="image" aria-pressed="false">תמונות</button>
+        <button type="button" class="chip" data-filter="video" aria-pressed="false">סרטונים</button>
+      </div>
+
+      <p class="status" id="wallStatus" role="status"></p>
+      <div class="masonry" id="wall"></div>
+
+      <button type="button" class="btn-secondary" data-action="start">גם אני רוצה לברך</button>
+    </section>
+
+    <!-- ================= 40 שנה בתמונות ================= -->
+    <section id="view-timeline" class="view" hidden>
+      <div class="subbar">
+        <button type="button" class="back-btn" data-go="wall" aria-label="חזרה">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <span class="years" id="timelineYears"></span>
+      </div>
+      <h1 class="big-title">40 שנה<br>בתמונות</h1>
+      <div class="chips scroll" id="eraFilter"></div>
+      <div class="timeline" id="timeline"></div>
+      <button type="button" class="btn-primary" data-action="start">הוסיפו תמונה מהעבר</button>
+    </section>
+
+    <!-- ================= 40 דברים שאוהבים ================= -->
+    <section id="view-forty" class="view" hidden>
+      <div class="subbar">
+        <button type="button" class="back-btn" data-go="wall" aria-label="חזרה">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <span class="logo">טלאור<span>/40</span></span>
+      </div>
+      <section class="forty-head">
+        <h1>40 דברים<br>שאוהבים בטלאור</h1>
+        <div class="forty-count"><span id="fortyNum">0</span><span>מתוך 40</span></div>
+        <div class="dots" id="fortyDots" aria-hidden="true"></div>
+      </section>
+      <ol class="forty-list" id="fortyList"></ol>
+    </section>
+
+    <!-- ================= טריוויה ================= -->
+    <section id="view-trivia" class="view trivia" hidden>
+      <div class="subbar">
+        <button type="button" class="back-btn mint" data-go="wall" aria-label="חזרה">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <span class="trivia-pos" id="triviaPos"></span>
+      </div>
+      <div class="progress many" id="triviaProgress" aria-hidden="true"></div>
+      <div id="triviaQuestion">
+        <div class="trivia-q">
+          <span class="asked-by" id="triviaBy"></span>
+          <h1 id="triviaText"></h1>
+        </div>
+        <div class="trivia-answers" id="triviaAnswers"></div>
+        <div class="bottom-actions">
+          <button type="button" class="btn-secondary on-mint" id="btnNextQ" hidden>לשאלה הבאה</button>
+        </div>
+      </div>
+      <div id="triviaEnd" class="trivia-end" hidden>
+        <p class="score" id="triviaScore"></p>
+        <p id="triviaScoreLine"></p>
+        <button type="button" class="btn-secondary on-mint" id="btnTriviaRestart">לשחק שוב</button>
+      </div>
+      <p class="status" id="triviaEmpty" hidden>עוד אין שאלות טריוויה.</p>
+      <button type="button" class="link-btn" data-action="start">גם אני רוצה לשאול שאלה</button>
     </section>
   </main>
 
@@ -119,6 +322,8 @@
     <button type="button" class="lightbox-close" aria-label="סגירה">✕</button>
     <img id="lightboxImg" alt="">
   </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
 
   <script src="config.js"></script>
   <script src="api.js"></script>

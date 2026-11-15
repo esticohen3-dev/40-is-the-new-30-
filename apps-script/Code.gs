@@ -21,13 +21,20 @@ var CONFIG = {
   MAX_MESSAGE: 500,
   MAX_IMAGE_BYTES: 10 * 1024 * 1024,
   MAX_VIDEO_BYTES: 30 * 1024 * 1024,
-  MAX_GREETINGS: 200,
+  MAX_LOVE: 150,
+  MAX_CAPTION: 100,
+  MAX_QUESTION: 150,
+  MAX_ANSWER: 60,
+  ERAS: ['ילדות', 'תיכון', 'צבא', 'לימודים', 'שנות ה-20', 'שנות ה-30'],
+  MAX_GREETINGS: 600, // סך כל השורות (ברכות + תוספות)
   MAX_SUBMITS_PER_MINUTE: 20,
   MAX_ADMIN_FAILS: 10
 };
 
 var GREETING_HEADERS = ['id', 'timestamp', 'name', 'message', 'type', 'file_id',
-  'file_name', 'size_bytes', 'hidden', 'in_guest_list'];
+  'file_name', 'size_bytes', 'hidden', 'in_guest_list',
+  'kind', 'era', 'caption', 'trivia_json', 'group_id'];
+var KINDS = ['greeting', 'past_photo', 'love', 'trivia'];
 var GUEST_HEADERS = ['שם', 'טלפון', 'סטטוס', 'מתי נשלח'];
 
 var IMAGE_TYPES = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/gif': '.gif',
@@ -57,6 +64,7 @@ function doPost(e) {
     switch (req.action) {
       case 'submit': return json_(submit_(req));
       case 'list': return json_(listPublic_());
+      case 'counts': return json_(counts_());
       case 'admin_list': requireAdmin_(req); return json_(adminList_());
       case 'admin_hide': requireAdmin_(req); return json_(adminSetHidden_(req.id, req.hidden === true));
       case 'admin_delete': requireAdmin_(req); return json_(adminDelete_(req.id));
@@ -83,43 +91,126 @@ function submit_(req) {
   var name = cleanText_(req.name, CONFIG.MAX_NAME);
   var message = cleanText_(req.message, CONFIG.MAX_MESSAGE);
   var file = req.file || null;
+  var extras = parseExtras_(req.extras);
+  var hasGreeting = !!(message || file);
   if (!name) throw userError_('צריך למלא שם.');
-  if (!message && !file) throw userError_('צריך לכתוב ברכה או לצרף תמונה או סרטון.');
+  if (!hasGreeting && !extras.length) throw userError_('צריך לכתוב ברכה או לצרף תמונה או סרטון.');
 
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(60000)) throw userError_('יש עומס כרגע. נסו שוב בעוד דקה.');
-  var saved = null;
+  var savedFiles = [];
+  function save(f) {
+    var saved = saveFile_(f, name);
+    savedFiles.push(saved.id);
+    return saved;
+  }
   try {
     checkRate_();
     var sheet = greetingsSheet_();
-    if (sheet.getLastRow() - 1 >= CONFIG.MAX_GREETINGS) {
+    ensureColumns_(sheet);
+    var count = (hasGreeting ? 1 : 0) + extras.length;
+    if (sheet.getLastRow() - 1 + count > CONFIG.MAX_GREETINGS) {
       throw userError_('הגענו למספר הברכות המקסימלי. תודה רבה!');
     }
-    if (file) saved = saveFile_(file, name);
+
+    var groupId = Utilities.getUuid();
+    var rows = [];
+    if (hasGreeting) {
+      var saved = file ? save(file) : null;
+      rows.push({ kind: 'greeting', message: message, saved: saved });
+    }
+    extras.forEach(function (x) {
+      if (x.kind === 'past_photo') {
+        var photo = save(x.file);
+        if (photo.type !== 'image') throw userError_('בתמונה מהעבר אפשר לשלוח רק תמונה.');
+        rows.push({ kind: 'past_photo', era: x.era, caption: x.caption, saved: photo });
+      } else if (x.kind === 'love') {
+        rows.push({ kind: 'love', message: x.text });
+      } else {
+        rows.push({ kind: 'trivia', message: x.trivia.question, trivia: x.trivia });
+      }
+    });
 
     var inList = markGuestSent_(name);
-    sheet.appendRow([
-      Utilities.getUuid(),
-      nowStr_(),
-      safeCell_(name),
-      safeCell_(message),
-      saved ? saved.type : 'text',
-      saved ? saved.id : '',
-      saved ? saved.name : '',
-      saved ? saved.size : '',
-      false,
-      inList ? 'כן' : 'לבדוק'
-    ]);
+    var ts = nowStr_();
+    var values = rows.map(function (r) {
+      return [
+        Utilities.getUuid(),
+        ts,
+        safeCell_(name),
+        safeCell_(r.message || ''),
+        r.saved ? r.saved.type : 'text',
+        r.saved ? r.saved.id : '',
+        r.saved ? r.saved.name : '',
+        r.saved ? r.saved.size : '',
+        false,
+        inList ? 'כן' : 'לבדוק',
+        r.kind,
+        r.era || '',
+        safeCell_(r.caption || ''),
+        r.trivia ? JSON.stringify(r.trivia) : '',
+        groupId
+      ];
+    });
+    sheet.getRange(sheet.getLastRow() + 1, 1, values.length, GREETING_HEADERS.length).setValues(values);
   } catch (err) {
-    // אם הקובץ נשמר אבל השורה לא נכתבה – לא משאירים קובץ יתום
-    if (saved) {
-      try { DriveApp.getFileById(saved.id).setTrashed(true); } catch (ignore) {}
-    }
+    // אם קבצים נשמרו אבל השורות לא נכתבו – לא משאירים קבצים יתומים
+    savedFiles.forEach(function (id) {
+      try { DriveApp.getFileById(id).setTrashed(true); } catch (ignore) {}
+    });
     throw err;
   } finally {
     lock.releaseLock();
   }
   return { ok: true };
+}
+
+/** בודק את התוספות (שלב 2). מחזיר רשימה של פריטים תקינים. */
+function parseExtras_(extras) {
+  var out = [];
+  if (!extras || typeof extras !== 'object') return out;
+
+  var p = extras.pastPhoto;
+  if (p) {
+    var era = String(p.era || '');
+    if (CONFIG.ERAS.indexOf(era) === -1) throw userError_('צריך לבחור תקופה לתמונה מהעבר.');
+    if (!p.file) throw userError_('צריך לבחור תמונה מהעבר.');
+    out.push({ kind: 'past_photo', era: era, caption: cleanText_(p.caption, CONFIG.MAX_CAPTION), file: p.file });
+  }
+
+  if (extras.love != null) {
+    var love = cleanText_(extras.love, CONFIG.MAX_LOVE);
+    if (!love) throw userError_('צריך לכתוב משהו שאתם אוהבים בטלאור.');
+    out.push({ kind: 'love', text: love });
+  }
+
+  var t = extras.trivia;
+  if (t) {
+    var question = cleanText_(t.question, CONFIG.MAX_QUESTION);
+    var answers = Array.isArray(t.answers) ? t.answers.slice(0, 4).map(function (a) {
+      return cleanText_(a, CONFIG.MAX_ANSWER);
+    }) : [];
+    var correct = Number(t.correct);
+    if (!question) throw userError_('צריך לכתוב שאלת טריוויה.');
+    if (answers.length !== 4 || answers.some(function (a) { return !a; })) {
+      throw userError_('צריך למלא 4 תשובות לשאלת הטריוויה.');
+    }
+    if (!(correct >= 0 && correct <= 3 && Math.floor(correct) === correct)) {
+      throw userError_('צריך לסמן את התשובה הנכונה.');
+    }
+    out.push({ kind: 'trivia', trivia: { question: question, answers: answers, correct: correct } });
+  }
+  return out;
+}
+
+/** מוסיף לגיליון קיים את כותרות העמודות החדשות, אם חסרות. */
+function ensureColumns_(sheet) {
+  var n = GREETING_HEADERS.length;
+  if (sheet.getMaxColumns() < n) sheet.insertColumnsAfter(sheet.getMaxColumns(), n - sheet.getMaxColumns());
+  var head = sheet.getRange(1, 1, 1, n).getValues()[0];
+  if (String(head[n - 1]) !== GREETING_HEADERS[n - 1]) {
+    sheet.getRange(1, 1, 1, n).setValues([GREETING_HEADERS]).setFontWeight('bold');
+  }
 }
 
 function checkRate_() {
@@ -244,9 +335,18 @@ function listPublic_() {
     .filter(function (g) { return !g.hidden; })
     .reverse() // מהחדש לישן
     .map(function (g) {
-      return { id: g.id, timestamp: g.timestamp, name: g.name, message: g.message, type: g.type, fileId: g.fileId };
+      var item = { id: g.id, timestamp: g.timestamp, name: g.name, message: g.message, type: g.type,
+        fileId: g.fileId, kind: g.kind, era: g.era, caption: g.caption };
+      if (g.trivia) item.trivia = g.trivia;
+      return item;
     });
   return { ok: true, locked: false, greetings: items };
+}
+
+/** מותר גם לפני יום ההולדת: רק מספר, בלי תוכן. */
+function counts_() {
+  var loveCount = readGreetings_().filter(function (g) { return g.kind === 'love' && !g.hidden; }).length;
+  return { ok: true, loveCount: loveCount };
 }
 
 /* ------------------------------------------------------------------ */
@@ -272,7 +372,8 @@ function adminList_() {
     var item = {
       id: g.id, timestamp: g.timestamp, name: g.name, message: g.message, type: g.type,
       fileId: g.fileId, fileName: g.fileName, size: g.size, hidden: g.hidden,
-      inGuestList: g.inGuestList, thumb: ''
+      inGuestList: g.inGuestList, thumb: '',
+      kind: g.kind, era: g.era, caption: g.caption, trivia: g.trivia
     };
     if (g.fileId) item.thumb = thumbDataUrl_(g.fileId);
     return item;
@@ -484,7 +585,8 @@ function readGreetings_() {
   var sheet = greetingsSheet_();
   var last = sheet.getLastRow();
   if (last < 2) return [];
-  return sheet.getRange(2, 1, last - 1, GREETING_HEADERS.length).getValues()
+  var cols = Math.min(GREETING_HEADERS.length, sheet.getMaxColumns());
+  return sheet.getRange(2, 1, last - 1, cols).getValues()
     .filter(function (r) { return String(r[0]).trim(); })
     .map(function (r) {
       return {
@@ -497,9 +599,23 @@ function readGreetings_() {
         fileName: String(r[6] || ''),
         size: Number(r[7]) || 0,
         hidden: r[8] === true || String(r[8]).toUpperCase() === 'TRUE',
-        inGuestList: String(r[9] || '')
+        inGuestList: String(r[9] || ''),
+        kind: KINDS.indexOf(String(r[10] || '')) >= 0 ? String(r[10]) : 'greeting',
+        era: String(r[11] || ''),
+        caption: String(r[12] || ''),
+        trivia: parseTrivia_(r[13])
       };
     });
+}
+
+function parseTrivia_(v) {
+  if (!v) return null;
+  try {
+    var t = JSON.parse(String(v));
+    return t && t.question && Array.isArray(t.answers) ? t : null;
+  } catch (err) {
+    return null;
+  }
 }
 
 function greetingsSheet_() {

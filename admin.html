@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#2b1d4e">
+  <meta name="theme-color" content="#E3F2E7">
   <title>ניהול ברכות</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;800;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="admin">
@@ -62,19 +62,17 @@
       <span>תצוגה מקדימה: ככה ייראה הקיר ביום ההולדת (בלי ברכות מוסתרות)</span>
       <button type="button" class="btn primary small" id="btnClosePreview">סגירה</button>
     </div>
-    <header class="hero">
-      <div class="confetti" aria-hidden="true"></div>
-      <div class="badge" aria-hidden="true">40</div>
-      <h1>40 לטלאור!</h1>
-      <p class="hero-sub">מזל טוב! הנה כל הברכות</p>
-    </header>
-    <main class="container">
-      <div class="wall-head">
-        <p class="wall-title">המון אהבה ממי שאוהבים אותך 💛</p>
+    <div class="page">
+      <div class="view">
+        <section class="wall-hero">
+          <div class="big-40" aria-hidden="true">40</div>
+          <h1>מזל טוב<br>טלאור!</h1>
+          <p id="previewCount"></p>
+        </section>
+        <p class="status" id="previewStatus"></p>
+        <div class="masonry" id="previewWall"></div>
       </div>
-      <p class="status" id="previewStatus"></p>
-      <div class="wall" id="previewWall"></div>
-    </main>
+    </div>
   </section>
 
   <div class="lightbox" id="lightbox" hidden>

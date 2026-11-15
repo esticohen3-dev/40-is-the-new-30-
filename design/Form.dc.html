@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>שלב 1 – הברכה</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&amp;family=Heebo:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1E3328}a:hover{color:#0F1F17}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 900px; box-sizing: border-box; background: #F5F7F2; font-family: Heebo, sans-serif; color: #1E3328; display: flex; flex-direction: column; gap: 18px; padding: 16px">
+  <div style="display: flex; align-items: center; gap: 12px; padding: 4px">
+    <a href="Main.dc.html" aria-label="חזרה" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; border: 1px solid #E3E9E1; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 13px; font-weight: 700; color: #5A6E62">שלב 1 מתוך 2</span>
+      <div aria-hidden="true" style="display: flex; gap: 6px"><span style="flex: 1; height: 6px; border-radius: 3px; background: {{accent}}"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #DCE5DD"></span></div>
+    </div>
+  </div>
+
+  <div style="padding: 0 4px; display: flex; flex-direction: column; gap: 6px">
+    <h1 style="margin: 0; font-family: Rubik, sans-serif; font-size: 30px; font-weight: 800; line-height: 1.15">הברכה שלכם לטלאור</h1>
+    <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #5A6E62">רק השם חובה. כתבו מה שבא מהלב.</p>
+  </div>
+
+  <form style="background: #FFFFFF; border: 1px solid #E3E9E1; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; gap: 18px">
+    <label style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 15px; font-weight: 700">השם שלך</span>
+      <input type="text" placeholder="איך טלאור מכיר אתכם" style="min-height: 52px; box-sizing: border-box; border: 1.5px solid #DCE5DD; border-radius: 16px; padding: 0 16px; background: #FFFFFF; font-family: Heebo, sans-serif; font-size: 16px; color: #1E3328">
+    </label>
+    <label style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 15px; font-weight: 700">הברכה</span>
+      <textarea rows="6" placeholder="מזל טוב טלאור! …" style="box-sizing: border-box; border: 1.5px solid #DCE5DD; border-radius: 16px; padding: 14px 16px; background: #FFFFFF; font-family: Heebo, sans-serif; font-size: 16px; line-height: 1.6; color: #1E3328; resize: none"></textarea>
+      <span style="align-self: flex-end; font-size: 12px; color: #5A6E62">0/500</span>
+    </label>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 15px; font-weight: 700">תמונה או סרטון <span style="font-weight: 400; color: #5A6E62">(לא חובה)</span></span>
+      <button type="button" style="min-height: 80px; border: 1.5px dashed #B8C7BD; border-radius: 16px; background: #F5F7F2; display: flex; align-items: center; justify-content: center; gap: 12px; font-family: Heebo, sans-serif; color: #1E3328; cursor: pointer">
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"></path></svg>
+        <span style="display: flex; flex-direction: column; align-items: flex-start"><strong style="font-size: 15px">בחרו קובץ</strong><span style="font-size: 12px; color: #5A6E62">תמונה עד 10MB · סרטון עד 30 שניות</span></span>
+      </button>
+    </div>
+  </form>
+
+  <a href="Extras.dc.html" style="margin-top: auto; min-height: 64px; border-radius: 22px; background: {{accent}}; color: #1E3328; text-decoration: none; display: flex; align-items: center; justify-content: center; font-family: Rubik, sans-serif; font-size: 20px; font-weight: 700">המשך</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#469F76&quot;,&quot;options&quot;:[&quot;#8BD450&quot;,&quot;#16C172&quot;,&quot;#3FD9A0&quot;,&quot;#00A86B&quot;]},&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#469F76' };
+  }
+}
+</script>
+</body>
+</html>

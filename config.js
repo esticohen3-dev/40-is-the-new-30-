@@ -12,5 +12,16 @@ window.APP_CONFIG = {
   MAX_VIDEO_MB: 30,
   MAX_VIDEO_SECONDS: 30,
   MAX_NAME: 40,
-  MAX_MESSAGE: 500
+  MAX_MESSAGE: 500,
+
+  // שלב 2 (תוספות) – אותן מגבלות כמו ב-CONFIG ב-Code.gs
+  MAX_LOVE: 150,
+  MAX_CAPTION: 100,
+  MAX_QUESTION: 150,
+  MAX_ANSWER: 60,
+  ERAS: ['ילדות', 'תיכון', 'צבא', 'לימודים', 'שנות ה-20', 'שנות ה-30'],
+  LOVE_GOAL: 40,
+
+  // תמונה של טלאור בדף הבית (קובץ בתיקייה img/)
+  HERO_IMAGE: 'img/talor.jpg'
 };

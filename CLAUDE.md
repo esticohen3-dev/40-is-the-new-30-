@@ -5,7 +5,12 @@ Greeting page for Talor's 40th birthday. Full spec (Hebrew): see README.md.
 ## Architecture
 - Static frontend (plain HTML/CSS/JS, no framework, no build step) on GitHub Pages.
 - Backend: `apps-script/Code.gs`, deployed as a Google Apps Script Web App, bound to a Google Sheet deliberately named `פרויקט עבודה` (it is a surprise; keep names in Drive/GitHub neutral). Files go to a private Drive folder.
-- All requests are `POST` with `Content-Type: text/plain` and a JSON body `{action, ...}` (avoids CORS preflight, which Apps Script can't answer). Actions: `submit`, `list`, `admin_list`, `admin_hide`, `admin_delete`, `admin_file` (admin preview of a private file).
+- All requests are `POST` with `Content-Type: text/plain` and a JSON body `{action, ...}` (avoids CORS preflight, which Apps Script can't answer). Actions: `submit` (greeting + optional `extras`: pastPhoto/love/trivia, one sheet row per item sharing `group_id`), `list`, `counts` (public, love count only), `admin_list`, `admin_hide`, `admin_delete`, `admin_file` (admin preview of a private file).
+
+## UI
+- Redesign spec: `design/HANDOFF.md` + `design/*.dc.html` mockups (green palette, Rubik + Heebo, no emoji).
+- Guest flow: Home → Step 1 (greeting) → Step 2 (extras) → Thanks. Birthday: Wall → Timeline / 40 things / Trivia, all views in `index.html`.
+- Secret admin entry: tap the `טלאור/40` logo 5 times. Hero photo: `img/talor.jpg` (placeholder shown if missing).
 
 ## Rules
 - UI text is Hebrew, RTL, mobile-first. Keep wording gender-neutral (plural imperative) for guests.
@@ -21,5 +26,5 @@ No test suite. `node --check` each JS file (copy `Code.gs` to a `.js` to check i
 
 ## Status (Nov 2026)
 Done: Sheet + Apps Script set up and deployed (URL in config.js), site live on GitHub Pages, test greeting sent, admin page works, secret 5-tap entry on the "40" badge works.
-Next: fill the guests tab; phone tests (image, short video, >30s video blocked, unlock check via BIRTHDAY_DATE override); delete test greetings; send link to guests.
+Next: add `img/talor.jpg`; paste new Code.gs + publish new deployment (redesign added columns, `counts`, `admin_file`); fill the guests tab; phone tests (image, short video, >30s video blocked, unlock check via BIRTHDAY_DATE override); delete test greetings; send link to guests.
 Changes to Code.gs need the owner to paste it into Apps Script and publish a new deployment version.

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>שלב 2 – עוד משהו</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&amp;family=Heebo:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1E3328}a:hover{color:#0F1F17}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 1100px; box-sizing: border-box; background: #F5F7F2; font-family: Heebo, sans-serif; color: #1E3328; display: flex; flex-direction: column; gap: 16px; padding: 16px">
+  <div style="display: flex; align-items: center; gap: 12px; padding: 4px">
+    <a href="Form.dc.html" aria-label="חזרה" style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; border: 1px solid #E3E9E1; display: flex; align-items: center; justify-content: center">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 13px; font-weight: 700; color: #5A6E62">שלב 2 מתוך 2 · לא חובה</span>
+      <div aria-hidden="true" style="display: flex; gap: 6px"><span style="flex: 1; height: 6px; border-radius: 3px; background: {{accent}}"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: {{accent}}"></span></div>
+    </div>
+  </div>
+
+  <div style="padding: 0 4px; display: flex; flex-direction: column; gap: 6px">
+    <h1 style="margin: 0; font-family: Rubik, sans-serif; font-size: 30px; font-weight: 800; line-height: 1.15">רוצים לתת לטלאור עוד משהו?</h1>
+    <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #5A6E62">כל אחד לוקח פחות מדקה. אפשר לבחור אחד, כמה, או לדלג.</p>
+  </div>
+
+  <section style="background: #FFFFFF; border: 1.5px solid {{accent}}; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; align-items: center; gap: 12px">
+      <span style="flex: none; width: 44px; height: 44px; border-radius: 14px; background: #E3F2E7; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6B3F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"></rect><circle cx="9" cy="10" r="1.8"></circle><path d="M21 16l-5-5-8 8"></path></svg></span>
+      <span style="flex: 1; display: flex; flex-direction: column"><strong style="font-size: 17px">תמונה מהעבר</strong><span style="font-size: 13px; color: #5A6E62">לציר הזמן "40 שנה בתמונות"</span></span>
+    </div>
+    <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+      <legend style="padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 700">מאיזו תקופה?</legend>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px">
+        <button type="button" style="min-height: 44px; border: 1px solid #DCE5DD; border-radius: 999px; background: #FFFFFF; padding: 0 14px; font-family: Heebo, sans-serif; font-size: 14px; color: #1E3328">ילדות</button>
+        <button type="button" aria-pressed="true" style="min-height: 44px; border: 0; border-radius: 999px; background: {{accent}}; padding: 0 14px; font-family: Heebo, sans-serif; font-size: 14px; font-weight: 700; color: #1E3328">תיכון</button>
+        <button type="button" style="min-height: 44px; border: 1px solid #DCE5DD; border-radius: 999px; background: #FFFFFF; padding: 0 14px; font-family: Heebo, sans-serif; font-size: 14px; color: #1E3328">צבא</button>
+        <button type="button" style="min-height: 44px; border: 1px solid #DCE5DD; border-radius: 999px; background: #FFFFFF; padding: 0 14px; font-family: Heebo, sans-serif; font-size: 14px; color: #1E3328">לימודים</button>
+        <button type="button" style="min-height: 44px; border: 1px solid #DCE5DD; border-radius: 999px; background: #FFFFFF; padding: 0 14px; font-family: Heebo, sans-serif; font-size: 14px; color: #1E3328">שנות ה-20</button>
+        <button type="button" style="min-height: 44px; border: 1px solid #DCE5DD; border-radius: 999px; background: #FFFFFF; padding: 0 14px; font-family: Heebo, sans-serif; font-size: 14px; color: #1E3328">שנות ה-30</button>
+      </div>
+    </fieldset>
+    <button type="button" style="min-height: 56px; border: 1.5px dashed #B8C7BD; border-radius: 16px; background: #F5F7F2; font-family: Heebo, sans-serif; font-size: 15px; font-weight: 700; color: #1E3328; cursor: pointer">בחרו תמונה</button>
+  </section>
+
+  <button type="button" style="min-height: 76px; border: 1px solid #E3E9E1; border-radius: 24px; background: #FFFFFF; padding: 0 18px; display: flex; align-items: center; gap: 12px; text-align: right; font-family: Heebo, sans-serif; color: #1E3328; cursor: pointer">
+    <span style="flex: none; width: 44px; height: 44px; border-radius: 14px; background: #E3F2E7; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2F6B3F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg></span>
+    <span style="flex: 1; display: flex; flex-direction: column"><strong style="font-size: 17px">משהו שאתם אוהבים בטלאור</strong><span style="font-size: 13px; color: #5A6E62">כבר נאספו [N] מתוך 40</span></span>
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+  </button>
+
+  <button type="button" style="min-height: 76px; border: 1px solid #E3E9E1; border-radius: 24px; background: #FFFFFF; padding: 0 18px; display: flex; align-items: center; gap: 12px; text-align: right; font-family: Heebo, sans-serif; color: #1E3328; cursor: pointer">
+    <span style="flex: none; width: 44px; height: 44px; border-radius: 14px; background: #E3F2E7; display: flex; align-items: center; justify-content: center; font-family: Rubik, sans-serif; font-size: 22px; font-weight: 800; color: #2F6B3F">?</span>
+    <span style="flex: 1; display: flex; flex-direction: column"><strong style="font-size: 17px">שאלת טריוויה על טלאור</strong><span style="font-size: 13px; color: #5A6E62">שאלה ו-4 תשובות. טלאור ינסה לנחש</span></span>
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E3328" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+  </button>
+
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px">
+    <a href="Thanks.dc.html" style="min-height: 64px; border-radius: 22px; background: {{accent}}; color: #1E3328; text-decoration: none; display: flex; align-items: center; justify-content: center; font-family: Rubik, sans-serif; font-size: 20px; font-weight: 700">שליחה לטלאור</a>
+    <a href="Thanks.dc.html" style="align-self: center; padding: 12px; font-size: 15px; font-weight: 500">דלגו ושלחו רק את הברכה</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#469F76","options":["#8BD450","#16C172","#3FD9A0","#00A86B"]},"$preview":{"width":390,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#469F76' };
+  }
+}
+</script>
+</body>
+</html>
