@@ -545,6 +545,7 @@
   function renderWall() {
     const greetings = byKind('greeting');
     $('wallCount').textContent = `${greetings.length} ברכות ממי שאוהבים אותך`;
+    $('greetCount').textContent = String(greetings.length);
     const items = wallFilter === 'all' ? greetings : greetings.filter((g) => g.type === wallFilter);
     const wall = $('wall');
     wall.textContent = '';

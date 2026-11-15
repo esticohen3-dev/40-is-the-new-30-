@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;800;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <div class="preview-bar" id="previewBar" hidden>
@@ -245,16 +245,21 @@
         <p id="wallCount"></p>
       </section>
 
+      <h2 class="section-head">עוד הפתעות</h2>
       <nav class="tiles" aria-label="עוד הפתעות">
         <button type="button" data-go="timeline">40 שנה בתמונות</button>
         <button type="button" data-go="forty">40 דברים שאוהבים</button>
         <button type="button" data-go="trivia">טריוויה</button>
       </nav>
 
-      <div class="chips filter" id="wallFilter">
+      <div class="section-head greetings-head">
+        <h2>הברכות</h2>
+        <span class="count-pill" id="greetCount"></span>
+      </div>
+      <div class="chips filter" id="wallFilter" role="group" aria-label="סינון הברכות">
         <button type="button" class="chip" data-filter="all" aria-pressed="true">הכל</button>
-        <button type="button" class="chip" data-filter="image" aria-pressed="false">תמונות</button>
-        <button type="button" class="chip" data-filter="video" aria-pressed="false">סרטונים</button>
+        <button type="button" class="chip" data-filter="image" aria-pressed="false">עם תמונה</button>
+        <button type="button" class="chip" data-filter="video" aria-pressed="false">עם סרטון</button>
       </div>
 
       <p class="status" id="wallStatus" role="status"></p>
@@ -329,8 +334,8 @@
 
   <div class="toast" id="toast" role="status" hidden></div>
 
-  <script src="config.js?v=5"></script>
-  <script src="api.js?v=5"></script>
-  <script src="app.js?v=5"></script>
+  <script src="config.js?v=6"></script>
+  <script src="api.js?v=6"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

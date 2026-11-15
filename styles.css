@@ -497,3 +497,18 @@ body.previewing { overflow: hidden; }
   .athumb { flex-basis: auto; width: 100%; height: 180px; }
 }
 .preview-bar .btn { flex: none; white-space: nowrap; }
+
+/* כותרות אזורים בקיר: מפרידות בין "עוד הפתעות" לבין הברכות והסינון שלהן */
+.section-head { margin: 8px 4px -6px; font-family: var(--head); font-size: 20px; font-weight: 800; }
+.greetings-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 12px; padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.greetings-head h2 { font-size: 20px; font-weight: 800; }
+.count-pill {
+  font-family: var(--head); font-size: 13px; font-weight: 700;
+  background: var(--mint); color: var(--deep);
+  border-radius: 999px; padding: 2px 10px;
+}
+.count-pill:empty { display: none; }
