@@ -15,6 +15,10 @@
   const VIDEO_EXT = { mp4: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', '3gp': 'video/3gpp', m4v: 'video/x-m4v' };
   const LETTERS = ['א', 'ב', 'ג', 'ד'];
 
+  /* תצוגה מקדימה למנהל: index.html?preview, עם הסיסמה שנשמרה בלשונית בדף הניהול */
+  const ADMIN_PW = (() => { try { return sessionStorage.getItem('talor40_admin') || ''; } catch (e) { return ''; } })();
+  const PREVIEW = /[?&]preview\b/.test(location.search) && !!ADMIN_PW;
+
   /* ---------------- ניווט בין מסכים ---------------- */
 
   const views = ['home', 'form', 'extras', 'sending', 'done', 'wall', 'timeline', 'forty', 'trivia'];
@@ -60,7 +64,9 @@
     img.onload = () => { $('heroPhoto').prepend(img); $('heroPhoto').classList.add('has-photo'); };
     img.src = CFG.HERO_IMAGE;
 
-    if (Date.now() >= BIRTHDAY) {
+    if (PREVIEW) {
+      openPreview();
+    } else if (Date.now() >= BIRTHDAY) {
       openWall();
     } else {
       tick();
@@ -485,6 +491,40 @@
     }
   }
 
+  async function openPreview() {
+    $('previewBar').hidden = false;
+    mainView = 'wall';
+    show('wall');
+    $('wallStatus').textContent = 'טוענים…';
+    try {
+      const data = await callApi('admin_list', { password: ADMIN_PW });
+      wallItems = data.greetings
+        .filter((g) => !g.hidden)
+        .map((g) => Object.assign({}, g, { kind: g.kind || 'greeting' }));
+      renderWall();
+    } catch (err) {
+      $('wallStatus').textContent = err.message;
+    }
+  }
+
+  /* בתצוגה מקדימה הקבצים עוד פרטיים: טוענים אותם דרך השרת, אחד אחרי השני */
+  const fileCache = {};
+  let fileQueue = Promise.resolve();
+  function fetchFile(id) {
+    if (!fileCache[id]) {
+      const job = fileQueue.then(() => callApi('admin_file', { password: ADMIN_PW, id })).then((r) => {
+        const bin = atob(r.data);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return URL.createObjectURL(new Blob([bytes], { type: r.mimeType }));
+      });
+      fileQueue = job.catch(() => {});
+      fileCache[id] = job;
+      job.catch(() => { delete fileCache[id]; });
+    }
+    return fileCache[id];
+  }
+
   const byKind = (kind) => (wallItems || []).filter((g) => g.kind === kind);
   let wallFilter = 'all';
 
@@ -537,7 +577,7 @@
 
   function imageCard(g) {
     const c = el('article', 'wcard');
-    c.appendChild(driveImage(g.fileId, 'תמונה מ' + g.name, 800, 'wimg'));
+    c.appendChild(driveImage(g, 'תמונה מ' + g.name, 800, 'wimg'));
     const body = el('div', 'wbody');
     body.appendChild(el('strong', 'wname', g.name));
     if (g.message) body.appendChild(el('p', 'wmsg small', g.message));
@@ -552,7 +592,24 @@
     play.type = 'button';
     play.setAttribute('aria-label', 'ניגון סרטון מ' + g.name);
     play.appendChild(svgPlay());
-    play.addEventListener('click', () => {
+    play.addEventListener('click', async () => {
+      if (PREVIEW) {
+        play.disabled = true;
+        try {
+          const v = el('video');
+          v.controls = true;
+          v.playsInline = true;
+          v.src = await fetchFile(g.id);
+          media.textContent = '';
+          media.classList.add('playing');
+          media.appendChild(v);
+          v.play().catch(() => {});
+        } catch (err) {
+          play.disabled = false;
+          toast('הטעינה של הסרטון נכשלה. אפשר לנסות שוב.');
+        }
+        return;
+      }
       const frame = el('iframe');
       frame.src = `https://drive.google.com/file/d/${encodeURIComponent(g.fileId)}/preview`;
       frame.title = 'סרטון מ' + g.name;
@@ -592,13 +649,25 @@
     return `https://lh3.googleusercontent.com/d/${encodeURIComponent(id)}=w${width}`;
   }
 
-  function driveImage(fileId, alt, width, className) {
+  function driveImage(g, alt, width, className) {
+    const fileId = g.fileId;
     const wrap = el('button', className);
     wrap.type = 'button';
     wrap.setAttribute('aria-label', 'הגדלת התמונה');
     const img = el('img');
-    img.loading = 'lazy';
     img.alt = alt;
+    if (PREVIEW) {
+      if (g.thumb) img.src = g.thumb; // תמונה קטנה עד שהמלאה נטענת
+      fetchFile(g.id).then((url) => { img.src = url; }).catch(() => {});
+      wrap.appendChild(img);
+      wrap.addEventListener('click', () => {
+        $('lightboxImg').onerror = null;
+        $('lightboxImg').src = img.src;
+        $('lightbox').hidden = false;
+      });
+      return wrap;
+    }
+    img.loading = 'lazy';
     img.src = driveImageUrl(fileId, width);
     img.addEventListener('error', function onErr() {
       img.removeEventListener('error', onErr);
@@ -666,7 +735,7 @@
         const grid = el('div', 'era-grid' + (items.length === 1 ? ' single' : ''));
         items.forEach((p) => {
           const fig = el('figure', 'era-photo');
-          fig.appendChild(driveImage(p.fileId, p.caption || 'תמונה מ' + p.name, 800, 'era-img'));
+          fig.appendChild(driveImage(p, p.caption || 'תמונה מ' + p.name, 800, 'era-img'));
           fig.appendChild(el('figcaption', '', (p.caption ? p.caption + ' · ' : '') + p.name));
           grid.appendChild(fig);
         });

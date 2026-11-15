@@ -4,7 +4,6 @@
   const $ = (id) => document.getElementById(id);
   const KEY = 'talor40_admin';
   let password = '';
-  let lastData = null;
 
   function store(value) {
     try {
@@ -72,7 +71,6 @@
   }
 
   function render(data) {
-    lastData = data;
     const all = data.greetings;
     const hidden = all.filter((g) => g.hidden).length;
     const kindCount = (k) => all.filter((g) => (g.kind || 'greeting') === k).length;
@@ -215,138 +213,8 @@
     }
   }
 
-  /* ---------------- תצוגה מקדימה של הקיר ---------------- */
-
-  const fileCache = {}; // id -> Promise<blob URL>
-
-  function fetchFile(id) {
-    if (!fileCache[id]) {
-      fileCache[id] = callApi('admin_file', { password, id }).then((r) => {
-        const bin = atob(r.data);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        return URL.createObjectURL(new Blob([bytes], { type: r.mimeType }));
-      });
-      fileCache[id].catch(() => { delete fileCache[id]; });
-    }
-    return fileCache[id];
-  }
-
-  $('btnPreview').addEventListener('click', openPreview);
-  $('btnClosePreview').addEventListener('click', () => {
-    $('preview').hidden = true;
-    document.body.classList.remove('previewing');
-    $('previewWall').querySelectorAll('video').forEach((v) => v.pause());
-  });
-
-  async function openPreview() {
-    if (!lastData) return;
-    const items = lastData.greetings.filter((g) => !g.hidden && (g.kind || 'greeting') === 'greeting');
-    const wall = $('previewWall');
-    wall.textContent = '';
-    $('previewCount').textContent = `${items.length} ברכות ממי שאוהבים אותך`;
-    $('previewStatus').textContent = items.length ? '' : 'עוד אין ברכות.';
-    document.body.classList.add('previewing');
-    $('preview').hidden = false;
-    $('preview').scrollTop = 0;
-
-    const cols = [el('div', 'masonry-col'), el('div', 'masonry-col')];
-    const heights = [0, 0];
-    const images = [];
-    let textCount = 0;
-    items.forEach((g) => {
-      let c;
-      let h;
-      if (g.type === 'image' && g.fileId) {
-        c = el('article', 'wcard');
-        const wrap = el('button', 'wimg');
-        wrap.type = 'button';
-        const img = el('img');
-        img.alt = 'תמונה מ' + g.name;
-        if (g.thumb) img.src = g.thumb; // תמונה קטנה עד שהמלאה נטענת
-        wrap.appendChild(img);
-        wrap.addEventListener('click', () => {
-          $('lightboxImg').src = img.src;
-          $('lightbox').hidden = false;
-        });
-        c.appendChild(wrap);
-        c.appendChild(cardBody(g));
-        images.push([g, img]);
-        h = 260;
-      } else if (g.type === 'video' && g.fileId) {
-        c = el('article', 'wcard video');
-        c.appendChild(previewVideo(g));
-        c.appendChild(cardBody(g));
-        h = 260;
-      } else {
-        textCount++;
-        const accent = textCount % 4 === 2;
-        c = el('article', 'wcard text' + (accent ? ' accent' : ''));
-        if (accent) c.appendChild(el('span', 'quote', '”'));
-        c.appendChild(el('p', 'wmsg', g.message));
-        c.appendChild(el('strong', 'wname', g.name));
-        h = 80;
-      }
-      h += (g.message || '').length / 1.5;
-      const i = heights[0] <= heights[1] ? 0 : 1;
-      cols[i].appendChild(c);
-      heights[i] += h;
-    });
-    cols.forEach((col) => wall.appendChild(col));
-
-    // טוענים את התמונות המלאות אחת אחרי השנייה כדי לא להעמיס על השרת
-    for (const [g, img] of images) {
-      if ($('preview').hidden) break;
-      try {
-        const url = await fetchFile(g.id);
-        img.onerror = () => { img.onerror = null; if (g.thumb) img.src = g.thumb; };
-        img.src = url;
-      } catch (e) { /* נשארת התמונה הקטנה */ }
-    }
-  }
-
-  function cardBody(g) {
-    const body = el('div', 'wbody');
-    body.appendChild(el('strong', 'wname', g.name));
-    if (g.message) body.appendChild(el('p', 'wmsg small', g.message));
-    return body;
-  }
-
-  function previewVideo(g) {
-    const wrap = el('div', 'wvideo' + (g.thumb ? ' has-thumb' : ''));
-    if (g.thumb) {
-      const img = el('img');
-      img.src = g.thumb;
-      img.alt = '';
-      wrap.appendChild(img);
-    }
-    const play = el('button', 'play-btn', '▶');
-    play.type = 'button';
-    play.setAttribute('aria-label', 'הפעלת הסרטון');
-    play.addEventListener('click', async () => {
-      play.disabled = true;
-      play.textContent = '…';
-      try {
-        const url = await fetchFile(g.id);
-        const v = el('video');
-        v.controls = true;
-        v.playsInline = true;
-        v.src = url;
-        wrap.textContent = '';
-        wrap.classList.add('playing');
-        wrap.appendChild(v);
-        v.play().catch(() => {});
-      } catch (err) {
-        play.disabled = false;
-        play.textContent = '▶';
-        alert('הטעינה של הסרטון נכשלה. אפשר לנסות שוב.');
-      }
-    });
-    wrap.appendChild(play);
-    return wrap;
-  }
-
-  $('lightbox').addEventListener('click', () => { $('lightbox').hidden = true; });
+  /* תצוגה מקדימה: האתר עצמו במצב מנהל (משתמש בסיסמה שנשמרה בלשונית) */
+  $('btnPreview').addEventListener('click', () => { location.href = 'index.html?preview'; });
 
   // כניסה אוטומטית אם הסיסמה כבר נשמרה בלשונית הזו
   password = load();
