@@ -10,7 +10,7 @@ Greeting page for Talor's 40th birthday. Full spec (Hebrew): see README.md.
 ## UI
 - Redesign spec: `design/HANDOFF.md` + `design/*.dc.html` mockups (green palette, Rubik + Heebo, no emoji).
 - Guest flow: Home → Step 1 (greeting) → Step 2 (extras) → Thanks. Birthday: Wall → Timeline / 40 things / Trivia, all views in `index.html`.
-- Secret admin entry: tap the `טלאור/40` logo 5 times. Hero photo: `img/talor.jpg` (placeholder shown if missing).
+- Secret admin entry: tap the round "40" badge (top bar) 5 times. Hero photo: `img/talor.jpg` (placeholder shown if missing).
 
 ## Rules
 - UI text is Hebrew, RTL, mobile-first. Keep wording gender-neutral (plural imperative) for guests.
