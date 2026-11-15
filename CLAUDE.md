@@ -26,5 +26,5 @@ No test suite. `node --check` each JS file (copy `Code.gs` to a `.js` to check i
 
 ## Status (Nov 2026)
 Done: Sheet + Apps Script set up and deployed (URL in config.js), site live on GitHub Pages, test greeting sent, admin page works, secret 5-tap entry on the "40" badge works.
-Next: add `img/talor.jpg`; paste new Code.gs + publish new deployment (redesign added columns, `counts`, `admin_file`); fill the guests tab; phone tests (image, short video, >30s video blocked, unlock check via BIRTHDAY_DATE override); delete test greetings; send link to guests.
+Next: paste new Code.gs + publish new deployment (redesign added columns, `counts`, `admin_file`); fill the guests tab; phone tests (image, short video, >30s video blocked, unlock check via BIRTHDAY_DATE override); delete test greetings; send link to guests.
 Auto-deploy workflow added; owner still needs to add the two secrets and run it once.
