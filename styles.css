@@ -103,7 +103,7 @@ img { max-width: 100%; }
 
 .countdown-panel { background: var(--mint); border-radius: 28px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
 .panel-label { font-size: 14px; font-weight: 700; color: var(--deep); }
-.countdown { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.countdown { direction: ltr; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .unit { background: var(--surface); border-radius: 16px; padding: 10px 0; display: flex; flex-direction: column; align-items: center; }
 .num { font-family: var(--head); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .lbl { font-size: 12px; color: var(--muted); }
@@ -370,7 +370,7 @@ input::placeholder, textarea::placeholder { color: #8A9A90; }
 .forty-name { font-size: 12px; color: var(--muted); }
 
 /* ---------- טריוויה ---------- */
-body:has(#view-trivia:not([hidden])) { background: var(--mint); }
+body.on-trivia { background: var(--mint); }
 .trivia { gap: 20px; }
 .trivia-pos { font-family: var(--head); font-size: 15px; font-weight: 700; }
 .progress.many span { background: var(--mint-2); }

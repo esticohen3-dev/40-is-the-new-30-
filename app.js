@@ -22,6 +22,7 @@
 
   function show(name) {
     views.forEach((v) => { $('view-' + v).hidden = v !== name; });
+    document.body.classList.toggle('on-trivia', name === 'trivia');
     window.scrollTo(0, 0);
   }
 
