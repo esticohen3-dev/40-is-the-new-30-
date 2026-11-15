@@ -27,10 +27,12 @@
         <p class="form-error" id="loginError" role="alert"></p>
         <div class="actions"><button type="submit" class="btn primary" id="btnLogin">כניסה</button></div>
       </form>
+      <p class="back-home"><a href="./">← חזרה לדף הראשי</a></p>
     </section>
 
     <section id="dash" hidden>
       <div class="toolbar">
+        <a class="btn ghost" href="./">לדף הראשי</a>
         <button type="button" class="btn ghost" id="btnRefresh">רענון</button>
         <button type="button" class="btn ghost" id="btnLogout">יציאה</button>
       </div>
@@ -53,6 +55,13 @@
       <div class="admin-list" id="list"></div>
     </section>
   </main>
+
+  <div class="busy" id="busy" role="status" aria-live="polite" hidden>
+    <div class="busy-box">
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="busyText">רק רגע…</p>
+    </div>
+  </div>
 
   <script src="config.js"></script>
   <script src="api.js"></script>

@@ -34,7 +34,16 @@
   });
 
   $('btnLogout').addEventListener('click', logout);
-  $('btnRefresh').addEventListener('click', () => refresh().catch(showError));
+  $('btnRefresh').addEventListener('click', async () => {
+    busy('מרעננים…');
+    try { await refresh(); } catch (err) { showError(err); } finally { busy(''); }
+  });
+
+  /** שכבת טעינה על כל המסך. טקסט ריק = הסתרה. */
+  function busy(text) {
+    $('busyText').textContent = text || '';
+    $('busy').hidden = !text;
+  }
 
   function logout() {
     password = '';
@@ -154,12 +163,13 @@
     const actions = el('div', 'actions');
     const toggle = el('button', 'btn ghost small', g.hidden ? 'הצגה' : 'הסתרה');
     toggle.type = 'button';
-    toggle.addEventListener('click', () => act(toggle, 'admin_hide', { id: g.id, hidden: !g.hidden }));
+    toggle.addEventListener('click', () => act(toggle, 'admin_hide', { id: g.id, hidden: !g.hidden },
+      g.hidden ? 'מציגים את הברכה…' : 'מסתירים את הברכה…'));
     const del = el('button', 'btn danger small', 'מחיקה');
     del.type = 'button';
     del.addEventListener('click', () => {
       const what = g.fileId ? 'הברכה והקובץ שלה יימחקו' : 'הברכה תימחק';
-      if (confirm(`למחוק את הברכה של ${g.name}?\n${what} לצמיתות.`)) act(del, 'admin_delete', { id: g.id });
+      if (confirm(`למחוק את הברכה של ${g.name}?\n${what} לצמיתות.`)) act(del, 'admin_delete', { id: g.id }, 'מוחקים את הברכה…');
     });
     actions.appendChild(toggle);
     actions.appendChild(del);
@@ -169,14 +179,18 @@
     return c;
   }
 
-  async function act(button, action, payload) {
+  async function act(button, action, payload, text) {
     button.disabled = true;
+    busy(text);
     try {
       await callApi(action, Object.assign({ password }, payload));
+      busy('מעדכנים את הרשימה…');
       await refresh();
     } catch (err) {
       button.disabled = false;
       showError(err);
+    } finally {
+      busy('');
     }
   }
 
