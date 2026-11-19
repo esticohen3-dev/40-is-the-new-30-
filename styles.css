@@ -63,7 +63,7 @@ img { max-width: 100%; }
 /* ---------- דף הבית ---------- */
 .hero-card { padding: 10px; display: flex; flex-direction: column; gap: 14px; }
 .hero-photo {
-  position: relative; height: clamp(240px, 40vh, 320px); border-radius: 20px; overflow: hidden;
+  position: relative; height: clamp(170px, 27vh, 300px); border-radius: 20px; overflow: hidden;
   background: var(--mint); color: var(--deep);
   display: grid; place-items: center;
 }
@@ -111,17 +111,21 @@ img { max-width: 100%; }
 .unit { background: var(--surface); border-radius: 14px; padding: 6px 0; display: flex; flex-direction: column; align-items: center; }
 .num { font-family: var(--head); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .lbl { font-size: 12px; color: var(--muted); }
-/* טיימר על התמונה */
+/* טיימר קטן על התמונה */
 .hero-photo .countdown-panel {
-  position: absolute; left: 10px; right: 10px; bottom: 10px;
-  background: rgba(255,255,255,.88); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-  border-radius: 16px; padding: 8px 10px; gap: 2px;
+  position: absolute; bottom: 10px; right: 10px;
+  flex-direction: row; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.9); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  border-radius: 999px; padding: 5px 12px;
 }
-.hero-photo .panel-label { font-size: 12px; text-align: center; }
-.hero-photo .countdown { gap: 4px; }
-.hero-photo .unit { background: none; padding: 0; }
-.hero-photo .num { font-size: 22px; line-height: 1.2; }
-.hero-photo .lbl { font-size: 11px; }
+.hero-photo .panel-label { font-size: 12px; }
+.hero-photo .countdown { display: flex; align-items: baseline; gap: 0; }
+.hero-photo .unit { background: none; padding: 0; flex-direction: row; align-items: baseline; gap: 3px; }
+.hero-photo .unit:first-child { order: 1; direction: rtl; margin-left: 6px; }
+.hero-photo .unit:not(:first-child) .lbl { display: none; }
+.hero-photo .unit:nth-child(2) .num::after, .hero-photo .unit:nth-child(3) .num::after { content: ":"; }
+.hero-photo .num { font-size: 14px; line-height: 1.2; }
+.hero-photo .lbl { font-size: 12px; color: var(--deep); }
 .lock-note { margin: 0; background: var(--mint); color: var(--deep); border-radius: 20px; padding: 14px 18px; font-weight: 700; }
 
 .secret-line { margin: 0 4px; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.6; color: var(--muted); }
