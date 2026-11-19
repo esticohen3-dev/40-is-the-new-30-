@@ -61,9 +61,9 @@ img { max-width: 100%; }
 .years { background: none; border: 0; color: var(--muted); }
 
 /* ---------- דף הבית ---------- */
-.hero-card { padding: 10px; display: flex; flex-direction: column; gap: 18px; }
+.hero-card { padding: 10px; display: flex; flex-direction: column; gap: 14px; }
 .hero-photo {
-  position: relative; height: 300px; border-radius: 20px; overflow: hidden;
+  position: relative; height: clamp(170px, 30vh, 280px); border-radius: 20px; overflow: hidden;
   background: var(--mint); color: var(--deep);
   display: grid; place-items: center;
 }
@@ -77,9 +77,10 @@ img { max-width: 100%; }
   font-size: 13px; font-weight: 700; color: var(--on-accent);
   background: var(--accent); border-radius: 999px; padding: 6px 12px;
 }
-.hero-text { padding: 0 10px 12px; display: flex; flex-direction: column; gap: 8px; }
-.hero-text h1, .page-head h1 { font-size: 30px; font-weight: 800; line-height: 1.15; }
-.hero-text p { margin: 0; color: var(--muted); line-height: 1.6; }
+.hero-text { padding: 0 10px 10px; display: flex; flex-direction: column; gap: 6px; }
+.hero-text h1 { font-size: 26px; font-weight: 800; line-height: 1.15; }
+.page-head h1 { font-size: 30px; font-weight: 800; line-height: 1.15; }
+.hero-text p { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
 
 .cta {
   min-height: 72px; border: 0; border-radius: 24px;
@@ -104,10 +105,10 @@ img { max-width: 100%; }
 }
 .step-num.active { background: var(--accent); }
 
-.countdown-panel { background: var(--mint); border-radius: 28px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.countdown-panel { background: var(--mint); border-radius: 24px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
 .panel-label { font-size: 14px; font-weight: 700; color: var(--deep); }
 .countdown { direction: ltr; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.unit { background: var(--surface); border-radius: 16px; padding: 10px 0; display: flex; flex-direction: column; align-items: center; }
+.unit { background: var(--surface); border-radius: 14px; padding: 6px 0; display: flex; flex-direction: column; align-items: center; }
 .num { font-family: var(--head); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .lbl { font-size: 12px; color: var(--muted); }
 .lock-note { margin: 0; background: var(--mint); color: var(--deep); border-radius: 20px; padding: 14px 18px; font-weight: 700; }
