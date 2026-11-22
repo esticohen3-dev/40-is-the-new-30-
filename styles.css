@@ -580,3 +580,26 @@ body.locked-scroll { overflow: hidden; }
 .secret-card #secretText { display: flex; flex-direction: column; gap: 4px; }
 .secret-card #secretDate { color: var(--muted); font-size: 15px; margin-top: 4px; }
 .secret-card .btn-primary { width: 100%; margin-top: 8px; }
+
+/* ---------- טלאור במילה אחת ---------- */
+.cloud {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 28px;
+  padding: 22px 14px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 14px;
+}
+.cloud-word {
+  font-family: var(--head); border: 0; background: none; padding: 4px 6px; border-radius: 12px;
+  line-height: 1.1; cursor: pointer; color: var(--ink); min-height: 44px; overflow-wrap: anywhere;
+}
+.cloud-word.s1 { font-size: 18px; font-weight: 700; color: var(--muted); }
+.cloud-word.s2 { font-size: 24px; font-weight: 700; color: var(--deep); }
+.cloud-word.s3 { font-size: 32px; font-weight: 800; color: var(--ink); }
+.cloud-word.s4 { font-size: 44px; font-weight: 900; color: var(--deep); }
+.cloud-word[aria-pressed="true"] { background: var(--mint); outline: 2px solid var(--accent); }
+.cloud-empty { margin: 0; color: var(--muted); }
+.cloud-hint { text-align: center; color: var(--muted); font-size: 14px; margin: 0; }
+.cloud-who { background: var(--mint); border-radius: 22px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.cloud-who strong { font-family: var(--head); font-size: 20px; }
+.cloud-n { font-size: 14px; color: #4D6657; }
+.cloud-n:empty { display: none; }
+.cloud-names { display: flex; flex-wrap: wrap; gap: 6px; }
+.cloud-names span { background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 500; }

@@ -84,7 +84,7 @@
       [images, 'ברכות עם תמונה'],
       [videos, 'ברכות עם סרטון'],
       [kindCount('past_photo'), 'תמונות מהעבר'],
-      [kindCount('love') + ' / 40', 'דברים שאוהבים'],
+      [kindCount('love'), 'מילים על טלאור'],
       [kindCount('trivia'), 'שאלות טריוויה'],
       [hidden, 'מוסתרים'],
       [all.length + ' / ' + data.maxGreetings, 'סה"כ פריטים'],
@@ -128,7 +128,7 @@
   }
 
   const TYPE_LABEL = { text: 'טקסט', image: 'תמונה', video: 'סרטון' };
-  const KIND_LABEL = { greeting: 'ברכה', past_photo: 'תמונה מהעבר', love: 'דבר שאוהבים', trivia: 'טריוויה' };
+  const KIND_LABEL = { greeting: 'ברכה', past_photo: 'תמונה מהעבר', love: 'מילה', trivia: 'טריוויה' };
 
   function card(g) {
     const c = el('article', 'acard' + (g.hidden ? ' is-hidden' : ''));

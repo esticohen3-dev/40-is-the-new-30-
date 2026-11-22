@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;800;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
   <div class="preview-bar" id="previewBar" hidden>
@@ -168,13 +168,14 @@
       <section class="extra" id="exLove">
         <button type="button" class="extra-head" aria-expanded="false">
           <span class="icon-tile"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
-          <span class="extra-title"><strong>משהו שאתם אוהבים בטלאור</strong><span id="loveCountLine">ל"40 דברים שאוהבים בטלאור"</span></span>
+          <span class="extra-title"><strong>טלאור במילה אחת</strong><span>מילה אחת או שתיים שמתארות את טלאור</span></span>
           <svg class="plus" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="extra-body" hidden>
           <label class="field">
-            <span class="field-label">מה אתם אוהבים בטלאור?</span>
-            <input type="text" id="lText" maxlength="150">
+            <span class="field-label">איך הייתם מתארים את טלאור?</span>
+            <input type="text" id="lText" maxlength="20" autocomplete="off">
+            <span class="counter" id="lCounter">0/20</span>
           </label>
         </div>
       </section>
@@ -249,7 +250,7 @@
       <h2 class="section-head">עוד הפתעות</h2>
       <nav class="tiles" aria-label="עוד הפתעות">
         <button type="button" data-go="timeline">40 שנה בתמונות</button>
-        <button type="button" data-go="forty">40 דברים שאוהבים</button>
+        <button type="button" data-go="forty">טלאור במילה אחת</button>
         <button type="button" data-go="trivia">טריוויה</button>
       </nav>
 
@@ -292,11 +293,15 @@
         <span class="logo-badge" aria-hidden="true">40</span>
       </div>
       <section class="forty-head">
-        <h1>40 דברים<br>שאוהבים בטלאור</h1>
-        <div class="forty-count"><span id="fortyNum">0</span><span>מתוך 40</span></div>
-        <div class="dots" id="fortyDots" aria-hidden="true"></div>
+        <h1>טלאור<br>במילה אחת</h1>
       </section>
-      <ol class="forty-list" id="fortyList"></ol>
+      <div class="cloud" id="cloud"></div>
+      <p class="cloud-hint" id="cloudHint">לוחצים על מילה כדי לראות מי כתב אותה</p>
+      <div class="cloud-who" id="cloudWho" role="status" hidden>
+        <strong id="cloudWord"></strong>
+        <span class="cloud-n" id="cloudCount"></span>
+        <div class="cloud-names" id="cloudNames"></div>
+      </div>
     </section>
 
     <!-- ================= טריוויה ================= -->
@@ -351,8 +356,8 @@
     </div>
   </div>
 
-  <script src="config.js?v=12"></script>
-  <script src="api.js?v=12"></script>
-  <script src="app.js?v=12"></script>
+  <script src="config.js?v=13"></script>
+  <script src="api.js?v=13"></script>
+  <script src="app.js?v=13"></script>
 </body>
 </html>

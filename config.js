@@ -17,12 +17,13 @@ window.APP_CONFIG = {
   MAX_MESSAGE: 500,
 
   // שלב 2 (תוספות) – אותן מגבלות כמו ב-CONFIG ב-Code.gs
-  MAX_LOVE: 150,
+  MAX_LOVE: 150,     // השרת מקבל עד 150; "טלאור במילה אחת" מוגבל באתר ל-MAX_WORD
+  MAX_WORD: 20,
+  MAX_WORD_COUNT: 2,
   MAX_CAPTION: 100,
   MAX_QUESTION: 150,
   MAX_ANSWER: 60,
   ERAS: ['ילדות', 'תיכון', 'צבא', 'לימודים', 'שנות ה-20', 'שנות ה-30'],
-  LOVE_GOAL: 40,
 
   // תמונה של טלאור בדף הבית (קובץ בתיקייה img/)
   HERO_IMAGE: 'img/talor.jpg'

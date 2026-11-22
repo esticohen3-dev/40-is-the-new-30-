@@ -339,10 +339,11 @@
     $('extrasError').textContent = '';
     $('btnSkip').hidden = flow.addMore;
     show('extras');
-    callApi('counts').then((d) => {
-      $('loveCountLine').textContent = `כבר נאספו ${d.loveCount} מתוך ${CFG.LOVE_GOAL}`;
-    }).catch(() => {});
   }
+
+  $('lText').addEventListener('input', () => {
+    $('lCounter').textContent = `${$('lText').value.length}/${CFG.MAX_WORD}`;
+  });
 
   $('btnExtrasBack').addEventListener('click', () => show(flow.addMore ? 'done' : 'form'));
 
@@ -353,6 +354,7 @@
     clearFiles(pastSlot);
     $('pCaption').value = '';
     $('lText').value = '';
+    $('lCounter').textContent = `0/${CFG.MAX_WORD}`;
     $('tQuestion').value = '';
     document.querySelectorAll('.tAnswer').forEach((i) => { i.value = ''; });
     document.querySelectorAll('input[name="tCorrect"]').forEach((r) => { r.checked = false; });
@@ -367,9 +369,10 @@
       extras.pastPhoto = { era: selectedEra, caption: $('pCaption').value.trim().slice(0, CFG.MAX_CAPTION) };
     }
     if ($('exLove').classList.contains('open')) {
-      const love = $('lText').value.trim();
-      if (!love) throw new Error('צריך לכתוב משהו שאתם אוהבים בטלאור.');
-      extras.love = love.slice(0, CFG.MAX_LOVE);
+      const word = $('lText').value.trim().replace(/\s+/g, ' ');
+      if (!word) throw new Error('צריך לכתוב מילה שמתארת את טלאור.');
+      if (word.split(' ').length > CFG.MAX_WORD_COUNT) throw new Error('אפשר לכתוב עד 2 מילים.');
+      extras.love = word.slice(0, CFG.MAX_WORD);
     }
     if ($('exTrivia').classList.contains('open')) {
       const question = $('tQuestion').value.trim();
@@ -780,7 +783,7 @@
 
   function openSection(name) {
     if (name === 'timeline') renderTimeline();
-    if (name === 'forty') renderForty();
+    if (name === 'forty') renderCloud();
     if (name === 'trivia') startTrivia();
     show(name);
   }
@@ -835,25 +838,53 @@
     });
   }
 
-  /* ---------------- 40 דברים שאוהבים ---------------- */
+  /* ---------------- טלאור במילה אחת (ענן מילים) ---------------- */
 
-  function renderForty() {
-    const loves = byKind('love').slice().reverse(); // מהישן לחדש
-    $('fortyNum').textContent = loves.length;
-    const dots = $('fortyDots');
-    dots.textContent = '';
-    for (let i = 0; i < CFG.LOVE_GOAL; i++) dots.appendChild(el('span', i < loves.length ? 'on' : ''));
-    const list = $('fortyList');
-    list.textContent = '';
-    if (!loves.length) list.appendChild(el('li', 'empty', 'עוד אין כאן כלום.'));
-    loves.forEach((l, i) => {
-      const li = el('li', i % 5 === 2 ? 'mint' : '');
-      li.appendChild(el('span', 'idx', String(i + 1).padStart(2, '0')));
-      const body = el('span', 'forty-body');
-      body.appendChild(el('span', 'forty-text', l.message));
-      body.appendChild(el('span', 'forty-name', l.name));
-      li.appendChild(body);
-      list.appendChild(li);
+  /** מאחד כתיבות שונות של אותה מילה: רווחים, פיסוק, אותיות גדולות/קטנות */
+  const normWord = (t) => String(t || '').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '').replace(/\s+/g, ' ').trim();
+
+  function renderCloud() {
+    const groups = new Map();
+    byKind('love').slice().reverse().forEach((l) => { // מהישן לחדש
+      const key = normWord(l.message);
+      if (!key) return;
+      if (!groups.has(key)) groups.set(key, { text: l.message.trim(), names: [] });
+      groups.get(key).names.push(l.name);
+    });
+    // הגדולות באמצע: מסדרים לפי כמות ומפזרים לסירוגין לשני הצדדים
+    const sorted = [...groups.values()].sort((a, b) => b.names.length - a.names.length);
+    const words = [];
+    sorted.forEach((w, i) => { if (i % 2) words.push(w); else words.unshift(w); });
+    const max = sorted.length ? sorted[0].names.length : 0;
+    const level = (n) => {
+      if (max === 1) return 's2';
+      const r = n / max;
+      return r >= 0.8 ? 's4' : r >= 0.5 ? 's3' : n >= 2 ? 's2' : 's1';
+    };
+
+    const cloud = $('cloud');
+    cloud.textContent = '';
+    $('cloudWho').hidden = true;
+    $('cloudHint').hidden = !words.length;
+    if (!words.length) {
+      cloud.appendChild(el('p', 'cloud-empty', 'עוד אין כאן מילים.'));
+      return;
+    }
+    words.forEach((w) => {
+      const b = el('button', 'cloud-word ' + level(w.names.length), w.text);
+      b.type = 'button';
+      b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => {
+        cloud.querySelectorAll('.cloud-word').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        $('cloudWord').textContent = w.text;
+        $('cloudCount').textContent = w.names.length > 1 ? `${w.names.length} אנשים כתבו את זה` : '';
+        const names = $('cloudNames');
+        names.textContent = '';
+        w.names.forEach((n) => names.appendChild(el('span', '', n)));
+        $('cloudWho').hidden = false;
+        $('cloudHint').hidden = true;
+      });
+      cloud.appendChild(b);
     });
   }
 
