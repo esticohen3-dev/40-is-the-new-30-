@@ -192,6 +192,17 @@ input::placeholder, textarea::placeholder { color: #8A9A90; }
   border-radius: 16px; margin-inline: auto;
 }
 .preview video { background: #000; }
+.preview.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pitem { position: relative; }
+.preview.grid .pitem img { width: 100%; aspect-ratio: 1; object-fit: cover; max-height: none; border-radius: 12px; }
+.pname { display: block; padding: 12px; font-size: 13px; word-break: break-all; }
+.pitem-remove {
+  position: absolute; top: 6px; left: 6px;
+  width: 36px; height: 36px; border-radius: 50%; border: 0;
+  background: rgba(30, 51, 40, .78); color: #fff; font-size: 15px; line-height: 1;
+  cursor: pointer; display: grid; place-items: center;
+}
+.pitem-remove::after { content: ''; position: absolute; inset: -4px; } /* שטח לחיצה של 44px */
 
 .link-btn {
   align-self: center; background: none; border: 0;
@@ -331,6 +342,9 @@ input::placeholder, textarea::placeholder { color: #8A9A90; }
 .wbody .wname { font-size: 14px; }
 .wimg { display: block; width: 100%; border: 0; padding: 0; background: #DDF5E6; cursor: zoom-in; }
 .wimg img { display: block; width: 100%; max-height: 420px; object-fit: cover; }
+.wthumbs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; margin-top: 2px; }
+.wthumb { display: block; width: 100%; border: 0; padding: 0; background: #DDF5E6; cursor: zoom-in; }
+.wthumb img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
 .wvideo { position: relative; height: 200px; background: var(--mint-2); display: grid; place-items: center; }
 .wvideo.playing { height: auto; aspect-ratio: 9 / 16; }
 .wvideo iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
@@ -542,3 +556,27 @@ body.previewing { overflow: hidden; }
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   cursor: default;
 }
+
+/* ---------- פופ-אפ "זה סוד" ---------- */
+body.locked-scroll { overflow: hidden; }
+.secret-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(18, 30, 23, .72);
+  display: grid; place-items: center; padding: 16px;
+}
+.secret-card {
+  width: 100%; max-width: 400px;
+  background: var(--surface); border-radius: 28px;
+  padding: 28px 22px 22px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.secret-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--mint); color: var(--deep);
+  display: grid; place-items: center;
+}
+.secret-card h2 { font-size: 30px; font-weight: 900; }
+.secret-card p { margin: 0; color: var(--ink); }
+.secret-card #secretText { display: flex; flex-direction: column; gap: 4px; }
+.secret-card #secretDate { color: var(--muted); font-size: 15px; margin-top: 4px; }
+.secret-card .btn-primary { width: 100%; margin-top: 8px; }

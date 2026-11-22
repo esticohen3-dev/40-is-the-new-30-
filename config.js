@@ -11,6 +11,8 @@ window.APP_CONFIG = {
   MAX_IMAGE_MB: 10,
   MAX_VIDEO_MB: 30,
   MAX_VIDEO_SECONDS: 30,
+  MAX_FILES: 5,      // תמונות בשדה אחד (סרטון: רק אחד, בלי תמונות)
+  MAX_TOTAL_MB: 35,  // כל הקבצים בשליחה אחת
   MAX_NAME: 40,
   MAX_MESSAGE: 500,
 

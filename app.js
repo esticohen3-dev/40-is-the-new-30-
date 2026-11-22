@@ -75,10 +75,28 @@
     } else if (Date.now() >= BIRTHDAY) {
       openWall();
     } else {
+      showSecret();
       tick();
       timer = setInterval(tick, 1000);
     }
   }
+
+  /* פופ-אפ "זה סוד": בכל כניסה, עד יום ההולדת */
+  function showSecret() {
+    $('secretDate').textContent = `הברכות ייחשפו לו ${CFG.BIRTHDAY_LABEL.replace(/^(\d)/, 'ב-$1')}.`;
+    $('secretPopup').hidden = false;
+    document.body.classList.add('locked-scroll');
+    $('btnSecretOk').focus();
+  }
+  function hideSecret() {
+    $('secretPopup').hidden = true;
+    document.body.classList.remove('locked-scroll');
+  }
+  $('btnSecretOk').addEventListener('click', hideSecret);
+  $('secretPopup').addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hideSecret();
+    if (e.key === 'Tab') { e.preventDefault(); $('btnSecretOk').focus(); } // הכפתור היחיד בחלון
+  });
 
   let timer = null;
 
@@ -124,7 +142,7 @@
       $('fName').focus();
       return;
     }
-    if (!message && !mainSlot.file) {
+    if (!message && !mainSlot.items.length) {
       $('formError').textContent = 'צריך לכתוב ברכה או לצרף תמונה או סרטון.';
       return;
     }
@@ -135,24 +153,27 @@
   /* ---------------- בחירת קבצים ---------------- */
 
   function makeSlot(ids, allowVideo) {
-    return Object.assign({ file: null, kind: null, mime: null, previewUrl: null, checking: false, allowVideo }, ids);
+    return Object.assign({ items: [], checking: false, allowVideo }, ids);
   }
   const mainSlot = makeSlot({ input: 'fFile', status: 'fileStatus', preview: 'preview', remove: 'btnRemoveFile', error: 'formError' }, true);
   const pastSlot = makeSlot({ input: 'pFile', status: 'pFileStatus', preview: 'pPreview', remove: null, error: 'extrasError' }, false);
 
-  $('fFile').addEventListener('change', (e) => handleFile(mainSlot, e.target.files && e.target.files[0]));
-  $('pFile').addEventListener('change', (e) => handleFile(pastSlot, e.target.files && e.target.files[0]));
-  $('btnRemoveFile').addEventListener('click', () => {
-    clearFile(mainSlot);
-    $('fileStatus').textContent = '';
-  });
+  $('fFile').addEventListener('change', (e) => handleFiles(mainSlot, e.target.files));
+  $('pFile').addEventListener('change', (e) => handleFiles(pastSlot, e.target.files));
+  $('btnRemoveFile').addEventListener('click', () => clearFiles(mainSlot));
 
-  function clearFile(slot) {
-    if (slot.previewUrl) URL.revokeObjectURL(slot.previewUrl);
-    slot.file = slot.kind = slot.mime = slot.previewUrl = null;
+  function clearFiles(slot) {
+    slot.items.forEach((it) => URL.revokeObjectURL(it.previewUrl));
+    slot.items = [];
     $(slot.input).value = '';
-    $(slot.preview).textContent = '';
-    if (slot.remove) $(slot.remove).hidden = true;
+    renderPreview(slot);
+  }
+
+  function removeItem(slot, item) {
+    URL.revokeObjectURL(item.previewUrl);
+    slot.items = slot.items.filter((it) => it !== item);
+    $(slot.error).textContent = '';
+    renderPreview(slot);
   }
 
   function detectType(file) {
@@ -167,51 +188,56 @@
 
   const mbText = (bytes) => (bytes / MB).toFixed(1);
 
-  async function handleFile(slot, file) {
-    clearFile(slot);
-    const fail = (msg) => {
-      clearFile(slot);
-      $(slot.status).textContent = '';
-      $(slot.error).textContent = msg;
-    };
+  /** מוסיף את הקבצים שנבחרו לקבצים שכבר יש. קובץ לא תקין לא נכנס, והשגיאה מוצגת. */
+  async function handleFiles(slot, fileList) {
+    const picked = [...(fileList || [])];
+    $(slot.input).value = ''; // כדי שאפשר יהיה לבחור שוב את אותו קובץ
     $(slot.error).textContent = '';
-    $(slot.status).textContent = '';
-    if (!file) return;
-
-    const t = detectType(file);
-    if (!t || (!slot.allowVideo && t.kind !== 'image')) {
-      return fail(slot.allowVideo ? 'אפשר לבחור רק תמונה או סרטון.' : 'אפשר לבחור כאן רק תמונה.');
-    }
-    if (t.kind === 'image' && file.size > CFG.MAX_IMAGE_MB * MB) {
-      return fail(`התמונה גדולה מדי (${mbText(file.size)}MB). אפשר לשלוח תמונה של עד ${CFG.MAX_IMAGE_MB}MB.`);
-    }
-    if (t.kind === 'video' && file.size > CFG.MAX_VIDEO_MB * MB) {
-      return fail(`הסרטון גדול מדי (${mbText(file.size)}MB). אפשר לשלוח סרטון של עד ${CFG.MAX_VIDEO_MB}MB. כדאי לקצר אותו או לצלם באיכות נמוכה יותר.`);
-    }
-
-    if (t.kind === 'video') {
-      slot.checking = true;
-      $(slot.status).textContent = 'בודקים את אורך הסרטון…';
-      const duration = await readVideoDuration(file);
-      slot.checking = false;
-      if (duration == null) {
-        return fail('לא הצלחנו לקרוא את אורך הסרטון. אפשר לנסות סרטון אחר או לצלם מחדש.');
+    if (!picked.length || slot.checking) return;
+    let error = '';
+    slot.checking = true;
+    for (const file of picked) {
+      const t = detectType(file);
+      if (!t || (!slot.allowVideo && t.kind !== 'image')) {
+        error = slot.allowVideo ? 'אפשר לבחור רק תמונות או סרטון.' : 'אפשר לבחור כאן רק תמונות.';
+        continue;
       }
-      // חצי שנייה של סבולת: סרטון "של 30 שניות" יוצא לפעמים 30.2
-      if (duration > CFG.MAX_VIDEO_SECONDS + 0.5) {
-        return fail(`הסרטון ארוך מדי (${Math.round(duration)} שניות). אפשר לשלוח סרטון של עד ${CFG.MAX_VIDEO_SECONDS} שניות.`);
+      const hasVideo = slot.items.some((it) => it.kind === 'video');
+      if (t.kind === 'video' ? slot.items.length > 0 : hasVideo) {
+        error = 'אפשר לשלוח סרטון אחד בלבד, בלי תמונות נוספות.';
+        continue;
       }
-      $(slot.status).textContent = `✓ סרטון של ${Math.round(duration)} שניות, ${mbText(file.size)}MB`;
-    } else {
-      $(slot.status).textContent = `✓ תמונה, ${mbText(file.size)}MB`;
+      if (slot.items.length >= CFG.MAX_FILES) {
+        error = `אפשר לבחור עד ${CFG.MAX_FILES} תמונות.`;
+        break;
+      }
+      if (t.kind === 'image' && file.size > CFG.MAX_IMAGE_MB * MB) {
+        error = `התמונה גדולה מדי (${mbText(file.size)}MB). אפשר לשלוח תמונה של עד ${CFG.MAX_IMAGE_MB}MB.`;
+        continue;
+      }
+      if (t.kind === 'video' && file.size > CFG.MAX_VIDEO_MB * MB) {
+        error = `הסרטון גדול מדי (${mbText(file.size)}MB). אפשר לשלוח סרטון של עד ${CFG.MAX_VIDEO_MB}MB. כדאי לקצר אותו או לצלם באיכות נמוכה יותר.`;
+        continue;
+      }
+      let duration = null;
+      if (t.kind === 'video') {
+        $(slot.status).textContent = 'בודקים את אורך הסרטון…';
+        duration = await readVideoDuration(file);
+        if (duration == null) {
+          error = 'לא הצלחנו לקרוא את אורך הסרטון. אפשר לנסות סרטון אחר או לצלם מחדש.';
+          continue;
+        }
+        // חצי שנייה של סבולת: סרטון "של 30 שניות" יוצא לפעמים 30.2
+        if (duration > CFG.MAX_VIDEO_SECONDS + 0.5) {
+          error = `הסרטון ארוך מדי (${Math.round(duration)} שניות). אפשר לשלוח סרטון של עד ${CFG.MAX_VIDEO_SECONDS} שניות.`;
+          continue;
+        }
+      }
+      slot.items.push({ file, kind: t.kind, mime: t.mime, duration, previewUrl: URL.createObjectURL(file) });
     }
-
-    slot.file = file;
-    slot.kind = t.kind;
-    slot.mime = t.mime;
-    slot.previewUrl = URL.createObjectURL(file);
+    slot.checking = false;
     renderPreview(slot);
-    if (slot.remove) $(slot.remove).hidden = false;
+    $(slot.error).textContent = error;
   }
 
   function readVideoDuration(file) {
@@ -246,21 +272,42 @@
   function renderPreview(slot) {
     const container = $(slot.preview);
     container.textContent = '';
-    if (!slot.file) return;
-    if (slot.kind === 'image') {
-      const img = el('img');
-      img.alt = 'תצוגה מקדימה';
-      img.src = slot.previewUrl;
-      img.onerror = () => { container.textContent = slot.file.name; };
-      container.appendChild(img);
+    const items = slot.items;
+    if (slot.remove) $(slot.remove).hidden = items.length < 2;
+    const size = items.reduce((sum, it) => sum + it.file.size, 0);
+    if (!items.length) {
+      $(slot.status).textContent = '';
+    } else if (items[0].kind === 'video') {
+      $(slot.status).textContent = `✓ סרטון של ${Math.round(items[0].duration)} שניות, ${mbText(size)}MB`;
     } else {
-      const v = el('video');
-      v.controls = true;
-      v.playsInline = true;
-      v.preload = 'metadata';
-      v.src = slot.previewUrl;
-      container.appendChild(v);
+      const left = CFG.MAX_FILES - items.length;
+      $(slot.status).textContent = (items.length === 1 ? '✓ תמונה אחת' : `✓ ${items.length} תמונות`) +
+        `, ${mbText(size)}MB` + (left > 0 ? ` · אפשר להוסיף עוד ${left}` : '');
     }
+    container.classList.toggle('grid', items.length > 1);
+    items.forEach((it, i) => {
+      const box = el('div', 'pitem');
+      if (it.kind === 'image') {
+        const img = el('img');
+        img.alt = `תמונה ${i + 1}`;
+        img.src = it.previewUrl;
+        img.onerror = () => { img.replaceWith(el('span', 'pname', it.file.name)); };
+        box.appendChild(img);
+      } else {
+        const v = el('video');
+        v.controls = true;
+        v.playsInline = true;
+        v.preload = 'metadata';
+        v.src = it.previewUrl;
+        box.appendChild(v);
+      }
+      const x = el('button', 'pitem-remove', '✕');
+      x.type = 'button';
+      x.setAttribute('aria-label', it.kind === 'video' ? 'הסרת הסרטון' : `הסרת תמונה ${i + 1}`);
+      x.addEventListener('click', () => removeItem(slot, it));
+      box.appendChild(x);
+      container.appendChild(box);
+    });
   }
 
   /* ---------------- שלב 2: תוספות ---------------- */
@@ -303,8 +350,7 @@
     ['exPhoto', 'exLove', 'exTrivia'].forEach((id) => setExtraOpen($(id), false));
     selectedEra = '';
     $('eraChips').querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', 'false'));
-    clearFile(pastSlot);
-    $('pFileStatus').textContent = '';
+    clearFiles(pastSlot);
     $('pCaption').value = '';
     $('lText').value = '';
     $('tQuestion').value = '';
@@ -317,7 +363,7 @@
     const extras = {};
     if ($('exPhoto').classList.contains('open')) {
       if (!selectedEra) throw new Error('צריך לבחור מאיזו תקופה התמונה.');
-      if (!pastSlot.file) throw new Error('צריך לבחור תמונה מהעבר.');
+      if (!pastSlot.items.length) throw new Error('צריך לבחור תמונה מהעבר.');
       extras.pastPhoto = { era: selectedEra, caption: $('pCaption').value.trim().slice(0, CFG.MAX_CAPTION) };
     }
     if ($('exLove').classList.contains('open')) {
@@ -327,12 +373,17 @@
     }
     if ($('exTrivia').classList.contains('open')) {
       const question = $('tQuestion').value.trim();
-      const answers = [...document.querySelectorAll('.tAnswer')].map((i) => i.value.trim().slice(0, CFG.MAX_ANSWER));
+      // 2 עד 4 תשובות: שולחים רק את המלאות, והתשובה הנכונה לפי המיקום ברשימה המקוצרת
+      const filled = [...document.querySelectorAll('.tAnswer')]
+        .map((input, i) => ({ i, text: input.value.trim().slice(0, CFG.MAX_ANSWER) }))
+        .filter((a) => a.text);
       const checked = document.querySelector('input[name="tCorrect"]:checked');
       if (!question) throw new Error('צריך לכתוב שאלת טריוויה.');
-      if (answers.some((a) => !a)) throw new Error('צריך למלא 4 תשובות לשאלת הטריוויה.');
+      if (filled.length < 2) throw new Error('צריך למלא לפחות 2 תשובות לשאלת הטריוויה.');
       if (!checked) throw new Error('צריך לסמן את התשובה הנכונה.');
-      extras.trivia = { question: question.slice(0, CFG.MAX_QUESTION), answers, correct: Number(checked.value) };
+      const correct = filled.findIndex((a) => a.i === Number(checked.value));
+      if (correct < 0) throw new Error('התשובה שסימנתם כנכונה ריקה. צריך לכתוב אותה או לסמן תשובה אחרת.');
+      extras.trivia = { question: question.slice(0, CFG.MAX_QUESTION), answers: filled.map((a) => a.text), correct };
     }
     return extras;
   }
@@ -364,19 +415,30 @@
       name: flow.name.slice(0, CFG.MAX_NAME),
       message: withGreeting ? $('fMessage').value.trim().slice(0, CFG.MAX_MESSAGE) : '',
       website: $('fWebsite').value,
-      file: null,
+      files: [],
       extras
     };
-    const hasVideo = withGreeting && mainSlot.kind === 'video';
-    const hasFile = (withGreeting && mainSlot.file) || extras.pastPhoto;
+    const mainItems = withGreeting ? mainSlot.items : [];
+    const pastItems = extras.pastPhoto ? pastSlot.items : [];
+    const fileCount = mainItems.length + pastItems.length;
+    const hasVideo = mainItems.some((it) => it.kind === 'video');
     $('sendingNote').textContent = hasVideo
       ? 'מעלים את הסרטון. זה יכול לקחת דקה או שתיים – לא לסגור את הדף.'
-      : hasFile ? 'מעלים את התמונה… לא לסגור את הדף.' : 'רק רגע.';
+      : fileCount > 1 ? 'מעלים את התמונות… לא לסגור את הדף.'
+      : fileCount ? 'מעלים את התמונה… לא לסגור את הדף.' : 'רק רגע.';
     show('sending');
 
     try {
-      if (withGreeting && mainSlot.file) payload.file = await filePayload(mainSlot);
-      if (extras.pastPhoto) extras.pastPhoto.file = await filePayload(pastSlot);
+      for (const it of mainItems) payload.files.push(await filePayload(it));
+      if (extras.pastPhoto) {
+        extras.pastPhoto.files = [];
+        for (const it of pastItems) extras.pastPhoto.files.push(await filePayload(it));
+      }
+      const all = payload.files.concat(extras.pastPhoto ? extras.pastPhoto.files : []);
+      const total = all.reduce((sum, f) => sum + f.data.length * 3 / 4, 0);
+      if (total > CFG.MAX_TOTAL_MB * MB) {
+        throw new Error(`הקבצים גדולים מדי ביחד (${mbText(total)}MB, אפשר עד ${CFG.MAX_TOTAL_MB}MB). אפשר לשלוח חלק עכשיו ולהוסיף עוד אחרי השליחה.`);
+      }
       await callApi('submit', payload);
       if (withGreeting) resetForm();
       resetExtras();
@@ -388,16 +450,15 @@
     }
   }
 
-  async function filePayload(slot) {
-    const blob = slot.kind === 'image' ? await shrinkImage(slot) : { blob: slot.file, mime: slot.mime };
-    return { name: slot.file.name, mimeType: blob.mime, data: await toBase64(blob.blob) };
+  async function filePayload(item) {
+    const blob = item.kind === 'image' ? await shrinkImage(item) : { blob: item.file, mime: item.mime };
+    return { name: item.file.name, mimeType: blob.mime, data: await toBase64(blob.blob) };
   }
 
   function resetForm() {
     $('greetForm').reset();
     $('msgCounter').textContent = `0/${CFG.MAX_MESSAGE}`;
-    $('fileStatus').textContent = '';
-    clearFile(mainSlot);
+    clearFiles(mainSlot);
   }
 
   /** מקטין תמונות גדולות ל-2048px ב-JPEG כדי שההעלאה תהיה מהירה. אם לא מצליח – שולח את המקור. */
@@ -542,8 +603,24 @@
     renderWall();
   });
 
+  /** ברכה עם כמה תמונות נשמרת כשורה לכל תמונה עם אותו groupId. כאן מאחדים אותן לכרטיס אחד. */
+  function groupedGreetings() {
+    const groups = new Map();
+    byKind('greeting').forEach((g) => {
+      const key = g.groupId || g.id;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(g);
+    });
+    return [...groups.values()].map((rows) => {
+      rows = rows.slice().reverse(); // הרשימה מהחדש לישן; בתוך ברכה חוזרים לסדר המקורי
+      const media = rows.filter((r) => r.fileId && (r.type === 'image' || r.type === 'video'));
+      const head = rows.find((r) => r.message) || rows[0];
+      return Object.assign({}, head, { message: head.message || '', type: media.length ? media[0].type : 'text', media });
+    });
+  }
+
   function renderWall() {
-    const greetings = byKind('greeting');
+    const greetings = groupedGreetings();
     $('wallCount').textContent = `${greetings.length} ברכות ממי שאוהבים אותך`;
     $('greetCount').textContent = String(greetings.length);
     const items = wallFilter === 'all' ? greetings : greetings.filter((g) => g.type === wallFilter);
@@ -556,11 +633,11 @@
     items.forEach((g) => {
       let card;
       let h;
-      if (g.type === 'image' && g.fileId) {
+      if (g.type === 'image') {
         card = imageCard(g);
-        h = 260 + (g.message ? g.message.length / 2 : 0);
-      } else if (g.type === 'video' && g.fileId) {
-        card = videoCard(g);
+        h = 260 + (g.media.length > 1 ? 90 : 0) + (g.message ? g.message.length / 2 : 0);
+      } else if (g.type === 'video') {
+        card = videoCard(g.media[0], g);
         h = 260 + (g.message ? g.message.length / 2 : 0);
       } else {
         textCount++;
@@ -584,7 +661,13 @@
 
   function imageCard(g) {
     const c = el('article', 'wcard');
-    c.appendChild(driveImage(g, 'תמונה מ' + g.name, 800, 'wimg'));
+    const [first, ...rest] = g.media;
+    c.appendChild(driveImage(first, 'תמונה מ' + g.name, 800, 'wimg'));
+    if (rest.length) {
+      const thumbs = el('div', 'wthumbs');
+      rest.forEach((m, i) => thumbs.appendChild(driveImage(m, `תמונה ${i + 2} מ${g.name}`, 400, 'wthumb')));
+      c.appendChild(thumbs);
+    }
     const body = el('div', 'wbody');
     body.appendChild(el('strong', 'wname', g.name));
     if (g.message) body.appendChild(el('p', 'wmsg small', g.message));
@@ -592,7 +675,7 @@
     return c;
   }
 
-  function videoCard(g) {
+  function videoCard(file, g) {
     const c = el('article', 'wcard video');
     const media = el('div', 'wvideo');
     const play = el('button', 'play-btn');
@@ -606,7 +689,7 @@
           const v = el('video');
           v.controls = true;
           v.playsInline = true;
-          v.src = await fetchFile(g.id);
+          v.src = await fetchFile(file.id);
           media.textContent = '';
           media.classList.add('playing');
           media.appendChild(v);
@@ -618,7 +701,7 @@
         return;
       }
       const frame = el('iframe');
-      frame.src = `https://drive.google.com/file/d/${encodeURIComponent(g.fileId)}/preview`;
+      frame.src = `https://drive.google.com/file/d/${encodeURIComponent(file.fileId)}/preview`;
       frame.title = 'סרטון מ' + g.name;
       frame.allow = 'autoplay; fullscreen';
       frame.allowFullscreen = true;

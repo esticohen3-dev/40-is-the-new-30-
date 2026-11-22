@@ -21,6 +21,8 @@ var CONFIG = {
   MAX_MESSAGE: 500,
   MAX_IMAGE_BYTES: 10 * 1024 * 1024,
   MAX_VIDEO_BYTES: 30 * 1024 * 1024,
+  MAX_FILES: 5, // תמונות בשדה אחד (סרטון: רק אחד, בלי תמונות)
+  MAX_TOTAL_BYTES: 35 * 1024 * 1024, // כל הקבצים בשליחה אחת
   MAX_LOVE: 150,
   MAX_CAPTION: 100,
   MAX_QUESTION: 150,
@@ -90,9 +92,9 @@ function submit_(req) {
 
   var name = cleanText_(req.name, CONFIG.MAX_NAME);
   var message = cleanText_(req.message, CONFIG.MAX_MESSAGE);
-  var file = req.file || null;
+  var files = fileList_(req.files, req.file, true);
   var extras = parseExtras_(req.extras);
-  var hasGreeting = !!(message || file);
+  var hasGreeting = !!(message || files.length);
   if (!name) throw userError_('צריך למלא שם.');
   if (!hasGreeting && !extras.length) throw userError_('צריך לכתוב ברכה או לצרף תמונה או סרטון.');
 
@@ -108,7 +110,8 @@ function submit_(req) {
     checkRate_();
     var sheet = greetingsSheet_();
     ensureColumns_(sheet);
-    var count = (hasGreeting ? 1 : 0) + extras.length;
+    checkTotalSize_(files.concat(extras.filter(function (x) { return x.file; }).map(function (x) { return x.file; })));
+    var count = (hasGreeting ? Math.max(1, files.length) : 0) + extras.length;
     if (sheet.getLastRow() - 1 + count > CONFIG.MAX_GREETINGS) {
       throw userError_('הגענו למספר הברכות המקסימלי. תודה רבה!');
     }
@@ -116,8 +119,11 @@ function submit_(req) {
     var groupId = Utilities.getUuid();
     var rows = [];
     if (hasGreeting) {
-      var saved = file ? save(file) : null;
-      rows.push({ kind: 'greeting', message: message, saved: saved });
+      if (!files.length) rows.push({ kind: 'greeting', message: message, saved: null });
+      // כמה תמונות בברכה אחת: שורה לכל קובץ, הטקסט רק בראשונה. ה-group_id מחבר ביניהן.
+      files.forEach(function (f, i) {
+        rows.push({ kind: 'greeting', message: i === 0 ? message : '', saved: save(f) });
+      });
     }
     extras.forEach(function (x) {
       if (x.kind === 'past_photo') {
@@ -174,8 +180,12 @@ function parseExtras_(extras) {
   if (p) {
     var era = String(p.era || '');
     if (CONFIG.ERAS.indexOf(era) === -1) throw userError_('צריך לבחור תקופה לתמונה מהעבר.');
-    if (!p.file) throw userError_('צריך לבחור תמונה מהעבר.');
-    out.push({ kind: 'past_photo', era: era, caption: cleanText_(p.caption, CONFIG.MAX_CAPTION), file: p.file });
+    var photos = fileList_(p.files, p.file, false);
+    if (!photos.length) throw userError_('צריך לבחור תמונה מהעבר.');
+    var caption = cleanText_(p.caption, CONFIG.MAX_CAPTION);
+    photos.forEach(function (f) {
+      out.push({ kind: 'past_photo', era: era, caption: caption, file: f });
+    });
   }
 
   if (extras.love != null) {
@@ -192,15 +202,37 @@ function parseExtras_(extras) {
     }) : [];
     var correct = Number(t.correct);
     if (!question) throw userError_('צריך לכתוב שאלת טריוויה.');
-    if (answers.length !== 4 || answers.some(function (a) { return !a; })) {
-      throw userError_('צריך למלא 4 תשובות לשאלת הטריוויה.');
+    // 2 עד 4 תשובות. האתר שולח רק תשובות מלאות, ו-correct לפי הרשימה הזו.
+    if (answers.length < 2 || answers.some(function (a) { return !a; })) {
+      throw userError_('צריך למלא לפחות 2 תשובות לשאלת הטריוויה.');
     }
-    if (!(correct >= 0 && correct <= 3 && Math.floor(correct) === correct)) {
+    if (!(correct >= 0 && correct < answers.length && Math.floor(correct) === correct)) {
       throw userError_('צריך לסמן את התשובה הנכונה.');
     }
     out.push({ kind: 'trivia', trivia: { question: question, answers: answers, correct: correct } });
   }
   return out;
+}
+
+/** רשימת קבצים מהבקשה (files, או file בודד מגרסה ישנה של האתר), עם בדיקת כמות. */
+function fileList_(list, single, allowVideo) {
+  var files = Array.isArray(list) ? list.filter(Boolean) : (single ? [single] : []);
+  if (files.length > CONFIG.MAX_FILES) throw userError_('אפשר לשלוח עד ' + CONFIG.MAX_FILES + ' תמונות.');
+  var videos = files.filter(function (f) {
+    return VIDEO_TYPES.hasOwnProperty(String((f && f.mimeType) || '').toLowerCase());
+  }).length;
+  if (videos && !allowVideo) throw userError_('בתמונה מהעבר אפשר לשלוח רק תמונה.');
+  if (videos && files.length > 1) throw userError_('אפשר לשלוח סרטון אחד בלבד, בלי תמונות נוספות.');
+  return files;
+}
+
+/** סך גודל הקבצים בשליחה (לפי אורך ה-base64, לפני פענוח). */
+function checkTotalSize_(files) {
+  var total = 0;
+  files.forEach(function (f) { total += Math.floor(String((f && f.data) || '').length * 3 / 4); });
+  if (total > CONFIG.MAX_TOTAL_BYTES) {
+    throw userError_('הקבצים גדולים מדי ביחד. אפשר לשלוח חלק עכשיו ולהוסיף עוד אחרי השליחה.');
+  }
 }
 
 /** מוסיף לגיליון קיים את כותרות העמודות החדשות, אם חסרות. */
@@ -336,7 +368,7 @@ function listPublic_() {
     .reverse() // מהחדש לישן
     .map(function (g) {
       var item = { id: g.id, timestamp: g.timestamp, name: g.name, message: g.message, type: g.type,
-        fileId: g.fileId, kind: g.kind, era: g.era, caption: g.caption };
+        fileId: g.fileId, kind: g.kind, era: g.era, caption: g.caption, groupId: g.groupId };
       if (g.trivia) item.trivia = g.trivia;
       return item;
     });
@@ -373,7 +405,7 @@ function adminList_() {
       id: g.id, timestamp: g.timestamp, name: g.name, message: g.message, type: g.type,
       fileId: g.fileId, fileName: g.fileName, size: g.size, hidden: g.hidden,
       inGuestList: g.inGuestList, thumb: '',
-      kind: g.kind, era: g.era, caption: g.caption, trivia: g.trivia
+      kind: g.kind, era: g.era, caption: g.caption, trivia: g.trivia, groupId: g.groupId
     };
     if (g.fileId) item.thumb = thumbDataUrl_(g.fileId);
     return item;
@@ -603,7 +635,8 @@ function readGreetings_() {
         kind: KINDS.indexOf(String(r[10] || '')) >= 0 ? String(r[10]) : 'greeting',
         era: String(r[11] || ''),
         caption: String(r[12] || ''),
-        trivia: parseTrivia_(r[13])
+        trivia: parseTrivia_(r[13]),
+        groupId: String(r[14] || '')
       };
     });
 }

@@ -68,16 +68,19 @@
     const all = data.greetings;
     const hidden = all.filter((g) => g.hidden).length;
     const kindCount = (k) => all.filter((g) => (g.kind || 'greeting') === k).length;
-    const greetings = all.filter((g) => (g.kind || 'greeting') === 'greeting');
-    const images = greetings.filter((g) => g.type === 'image').length;
-    const videos = greetings.filter((g) => g.type === 'video').length;
+    // ברכה עם כמה תמונות = כמה שורות עם אותו groupId. סופרים ברכות, לא שורות.
+    const greetingRows = all.filter((g) => (g.kind || 'greeting') === 'greeting');
+    const countGroups = (rows) => new Set(rows.map((g) => g.groupId || g.id)).size;
+    const greetingCount = countGroups(greetingRows);
+    const images = countGroups(greetingRows.filter((g) => g.type === 'image'));
+    const videos = countGroups(greetingRows.filter((g) => g.type === 'video'));
     const guests = data.guests;
     const sentGuests = guests.filter((g) => g.sent).length;
 
     const stats = $('stats');
     stats.textContent = '';
     [
-      [greetings.length, 'ברכות'],
+      [greetingCount, 'ברכות'],
       [images, 'ברכות עם תמונה'],
       [videos, 'ברכות עם סרטון'],
       [kindCount('past_photo'), 'תמונות מהעבר'],

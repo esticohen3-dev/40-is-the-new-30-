@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@700;800;900&family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body>
   <div class="preview-bar" id="previewBar" hidden>
@@ -105,15 +105,15 @@
         </div>
 
         <div class="field">
-          <span class="field-label">תמונה או סרטון <span class="optional">(לא חובה)</span></span>
+          <span class="field-label">תמונות או סרטון <span class="optional">(לא חובה)</span></span>
           <label class="upload">
-            <input type="file" id="fFile" accept="image/*,video/*">
+            <input type="file" id="fFile" accept="image/*,video/*" multiple>
             <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
-            <span class="upload-text"><strong>בחרו קובץ</strong><span>תמונה עד 10MB · סרטון עד 30 שניות</span></span>
+            <span class="upload-text"><strong>בחרו קבצים</strong><span>עד 5 תמונות · או סרטון אחד עד 30 שניות</span></span>
           </label>
           <p class="file-status" id="fileStatus" role="status"></p>
           <div class="preview" id="preview"></div>
-          <button type="button" class="link-btn danger" id="btnRemoveFile" hidden>הסרת הקובץ</button>
+          <button type="button" class="link-btn danger" id="btnRemoveFile" hidden>הסרת כל הקבצים</button>
         </div>
 
         <p class="form-error" id="formError" role="alert"></p>
@@ -152,8 +152,8 @@
             <div class="chips" id="eraChips"></div>
           </fieldset>
           <label class="upload small">
-            <input type="file" id="pFile" accept="image/*">
-            <span class="upload-text"><strong>בחרו תמונה</strong></span>
+            <input type="file" id="pFile" accept="image/*" multiple>
+            <span class="upload-text"><strong>בחרו תמונות</strong><span>עד 5 תמונות</span></span>
           </label>
           <p class="file-status" id="pFileStatus" role="status"></p>
           <div class="preview" id="pPreview"></div>
@@ -183,7 +183,7 @@
       <section class="extra" id="exTrivia">
         <button type="button" class="extra-head" aria-expanded="false">
           <span class="icon-tile q">?</span>
-          <span class="extra-title"><strong>שאלת טריוויה על טלאור</strong><span>שאלה ו-4 תשובות. טלאור ינסה לנחש</span></span>
+          <span class="extra-title"><strong>שאלת טריוויה על טלאור</strong><span>שאלה ו-2 עד 4 תשובות. טלאור ינסה לנחש</span></span>
           <svg class="plus" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="extra-body" hidden>
@@ -192,11 +192,11 @@
             <input type="text" id="tQuestion" maxlength="150">
           </label>
           <fieldset class="answers">
-            <legend>4 תשובות. סמנו את הנכונה</legend>
+            <legend>2 עד 4 תשובות. סמנו את הנכונה</legend>
             <div class="answer-row"><input type="radio" name="tCorrect" value="0" aria-label="תשובה א נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה א"></div>
             <div class="answer-row"><input type="radio" name="tCorrect" value="1" aria-label="תשובה ב נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה ב"></div>
-            <div class="answer-row"><input type="radio" name="tCorrect" value="2" aria-label="תשובה ג נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה ג"></div>
-            <div class="answer-row"><input type="radio" name="tCorrect" value="3" aria-label="תשובה ד נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה ד"></div>
+            <div class="answer-row"><input type="radio" name="tCorrect" value="2" aria-label="תשובה ג נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה ג (לא חובה)"></div>
+            <div class="answer-row"><input type="radio" name="tCorrect" value="3" aria-label="תשובה ד נכונה"><input type="text" class="tAnswer" maxlength="60" placeholder="תשובה ד (לא חובה)"></div>
           </fieldset>
         </div>
       </section>
@@ -335,8 +335,24 @@
 
   <div class="toast" id="toast" role="status" hidden></div>
 
-  <script src="config.js?v=11"></script>
-  <script src="api.js?v=11"></script>
-  <script src="app.js?v=11"></script>
+  <!-- פופ-אפ "זה סוד": בכל כניסה, עד יום ההולדת -->
+  <div class="secret-overlay" id="secretPopup" hidden>
+    <div class="secret-card" role="dialog" aria-modal="true" aria-labelledby="secretTitle" aria-describedby="secretText">
+      <span class="secret-icon" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      </span>
+      <h2 id="secretTitle">ששש... זה סוד!</h2>
+      <div id="secretText">
+        <p>הדף הזה הוא הפתעה ליום ההולדת ה-40 של טלאור.</p>
+        <p>אל תגלו לטלאור ואל תשתפו את הקישור איתו.</p>
+        <p id="secretDate">הברכות ייחשפו לו ב-5 בפברואר 2027.</p>
+      </div>
+      <button type="button" class="btn-primary" id="btnSecretOk">הבנתי, אני בסוד</button>
+    </div>
+  </div>
+
+  <script src="config.js?v=12"></script>
+  <script src="api.js?v=12"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
