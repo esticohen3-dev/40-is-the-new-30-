@@ -14,6 +14,7 @@
   const IMAGE_EXT = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif' };
   const VIDEO_EXT = { mp4: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', '3gp': 'video/3gpp', m4v: 'video/x-m4v' };
   const LETTERS = ['א', 'ב', 'ג', 'ד'];
+  const WORD_SEP = ' · '; // מפריד בין התיאורים של אותו אדם בתא בגיליון
 
   /* תצוגה מקדימה למנהל: index.html?preview, עם הסיסמה שנשמרה בלשונית בדף הניהול */
   const ADMIN_PW = (() => {
@@ -341,10 +342,6 @@
     show('extras');
   }
 
-  $('lText').addEventListener('input', () => {
-    $('lCounter').textContent = `${$('lText').value.length}/${CFG.MAX_WORD}`;
-  });
-
   $('btnExtrasBack').addEventListener('click', () => show(flow.addMore ? 'done' : 'form'));
 
   function resetExtras() {
@@ -353,8 +350,7 @@
     $('eraChips').querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', 'false'));
     clearFiles(pastSlot);
     $('pCaption').value = '';
-    $('lText').value = '';
-    $('lCounter').textContent = `0/${CFG.MAX_WORD}`;
+    document.querySelectorAll('.lWord').forEach((i) => { i.value = ''; });
     $('tQuestion').value = '';
     document.querySelectorAll('.tAnswer').forEach((i) => { i.value = ''; });
     document.querySelectorAll('input[name="tCorrect"]').forEach((r) => { r.checked = false; });
@@ -369,10 +365,12 @@
       extras.pastPhoto = { era: selectedEra, caption: $('pCaption').value.trim().slice(0, CFG.MAX_CAPTION) };
     }
     if ($('exLove').classList.contains('open')) {
-      const word = $('lText').value.trim().replace(/\s+/g, ' ');
-      if (!word) throw new Error('צריך לכתוב מילה שמתארת את טלאור.');
-      if (word.split(' ').length > CFG.MAX_WORD_COUNT) throw new Error('אפשר לכתוב עד 2 מילים.');
-      extras.love = word.slice(0, CFG.MAX_WORD);
+      // עד 3 תיאורים, לא חובה. נשמרים יחד בתא אחד, מופרדים ב-WORD_SEP; הענן מפצל אותם.
+      const words = [...document.querySelectorAll('.lWord')]
+        .map((i) => i.value.replace(/[·|]/g, ' ').trim().replace(/\s+/g, ' ').slice(0, CFG.MAX_WORD))
+        .filter(Boolean);
+      if (words.some((w) => w.split(' ').length > CFG.MAX_WORD_COUNT)) throw new Error('בכל שורה אפשר לכתוב עד 2 מילים.');
+      if (words.length) extras.love = words.join(WORD_SEP);
     }
     if ($('exTrivia').classList.contains('open')) {
       const question = $('tQuestion').value.trim();
@@ -846,10 +844,14 @@
   function renderCloud() {
     const groups = new Map();
     byKind('love').slice().reverse().forEach((l) => { // מהישן לחדש
-      const key = normWord(l.message);
-      if (!key) return;
-      if (!groups.has(key)) groups.set(key, { text: l.message.trim(), names: [] });
-      groups.get(key).names.push(l.name);
+      const seen = new Set(); // אותו אדם שכתב אותה מילה פעמיים נספר פעם אחת
+      l.message.split(WORD_SEP.trim()).forEach((part) => {
+        const key = normWord(part);
+        if (!key || seen.has(key)) return;
+        seen.add(key);
+        if (!groups.has(key)) groups.set(key, { text: part.trim(), names: [] });
+        groups.get(key).names.push(l.name);
+      });
     });
     // הגדולות באמצע: מסדרים לפי כמות ומפזרים לסירוגין לשני הצדדים
     const sorted = [...groups.values()].sort((a, b) => b.names.length - a.names.length);

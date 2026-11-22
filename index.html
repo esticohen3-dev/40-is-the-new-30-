@@ -168,15 +168,16 @@
       <section class="extra" id="exLove">
         <button type="button" class="extra-head" aria-expanded="false">
           <span class="icon-tile"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
-          <span class="extra-title"><strong>טלאור במילה אחת</strong><span>מילה אחת או שתיים שמתארות את טלאור</span></span>
+          <span class="extra-title"><strong>טלאור במילה אחת</strong><span>עד 3 מילים או ביטויים קצרים שמתארים את טלאור</span></span>
           <svg class="plus" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
         <div class="extra-body" hidden>
-          <label class="field">
-            <span class="field-label">איך הייתם מתארים את טלאור?</span>
-            <input type="text" id="lText" maxlength="20" autocomplete="off">
-            <span class="counter" id="lCounter">0/20</span>
-          </label>
+          <fieldset class="answers">
+            <legend>איך הייתם מתארים את טלאור? <span class="optional">(עד 3, לא חובה)</span></legend>
+            <input type="text" class="lWord" maxlength="20" autocomplete="off" placeholder="למשל: לב זהב" aria-label="תיאור 1">
+            <input type="text" class="lWord" maxlength="20" autocomplete="off" placeholder="למשל: אופטימי" aria-label="תיאור 2">
+            <input type="text" class="lWord" maxlength="20" autocomplete="off" placeholder="למשל: חבר טוב" aria-label="תיאור 3">
+          </fieldset>
         </div>
       </section>
 
